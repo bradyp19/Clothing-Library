@@ -3,4 +3,4 @@
 Issues\
 As a site visitor, I want to see a list of available clothing items for borrowing, so I can find something that suits my needs.
 
-As a site visitor, I want to filter and sort clothing items by type, size, and availability, so I can quickly find what I need to borrow.
+
