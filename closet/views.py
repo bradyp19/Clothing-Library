@@ -1,3 +1,6 @@
 from django.shortcuts import render
+from django.http import HttpResponseRedirect
+from django.views import View
 
-# Create your views here.
+class LoginView(View):
+    template_name = "closet/login.html"
