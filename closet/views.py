@@ -3,8 +3,9 @@ from django.http import HttpResponseRedirect
 from django.views import View, generic
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
+from django.views.generic.list import ListView
 
-from .models import Item, Clothing, Shoes
+from .models import Item, Clothing, Shoes, Librarian, Patron
 from .forms import ItemForm
 
 class LoginView(View):
@@ -40,3 +41,9 @@ class AddView(generic.CreateView):
             )
             shoes.save_base(raw=True)
         return redirect(reverse("closet:dashboard")) # change this to redirect to desired page
+
+class PatronView(ListView):
+    model = Patron
+
+class LibrarianView(ListView):
+    model = Librarian
