@@ -44,6 +44,10 @@ class AddView(generic.CreateView):
 
 class PatronView(ListView):
     model = Patron
+    template_name = "closet/patron_list.html"
 
 class LibrarianView(ListView):
     model = Librarian
+    template_name = "closet/librarian_list.html"
+
+
