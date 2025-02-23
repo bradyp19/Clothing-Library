@@ -1,7 +1,11 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from django.http import HttpResponseRedirect
-from django.views import View
+from django.views import View, generic
 from django.contrib.auth.decorators import login_required
+from django.urls import reverse
+
+from .models import Item, Clothing, Shoes
+from .forms import ItemForm
 
 class LoginView(View):
     template_name = "closet/login.html"
@@ -12,3 +16,27 @@ class LoginView(View):
 @login_required
 def dashboard(request):
     return render(request, "closet/dashboard.html", {"user": request.user})
+
+class AddView(generic.CreateView):
+    model = Item
+    form_class = ItemForm
+    template_name = "closet/add.html"
+
+    def form_valid(self, form):
+        item = form.save(commit=False)
+        item.save()
+
+        item_type = form.cleaned_data["item_type"]
+        if item_type == "CLOTHING":
+            clothing = Clothing(
+                item_ptr=item, #multi-table inheritance 1 to 1 relationship
+                size=form.cleaned_data["clothing_size"]
+            )
+            clothing.save_base(raw=True) #dont save parent Item instance again
+        elif item_type == "SHOES":
+            shoes = Shoes(
+                item_ptr=item,
+                size=form.cleaned_data["shoes_size"]
+            )
+            shoes.save_base(raw=True)
+        return redirect(reverse("closet:dashboard")) # change this to redirect to desired page
