@@ -39,6 +39,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'bootstrap5',
+
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "allauth.socialaccount.providers.google",  # Google login support
+    "closet",  # Your main app
 ]
 
 MIDDLEWARE = [
@@ -49,6 +55,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    "allauth.account.middleware.AccountMiddleware",
 ]
 
 ROOT_URLCONF = 'mysite.urls'
@@ -100,6 +108,37 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
+]
+
+SITE_ID = 1
+
+LOGIN_REDIRECT_URL = "/"  # Redirect users after login
+LOGOUT_REDIRECT_URL = "/"  # Redirect after logout
+
+# ACCOUNT_AUTHENTICATION_METHOD = "email" Deprecated
+ACCOUNT_LOGIN_METHODS = {"email"}
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = False
+SOCIALACCOUNT_PROVIDERS = {
+    "google": {
+        "SCOPE": [
+            "profile",
+            "email",
+        ],
+        "AUTH_PARAMS": {
+            "access_type": "online",
+        },
+        "APP": {
+            "client_id": "160557790296-2nuf6ke6s3bhovhj32qpmduhgmr7dp6d.apps.googleusercontent.com",
+            "secret": "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",
+        }
+    }
+}
 
 
 # Internationalization
