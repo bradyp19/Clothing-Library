@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import User
 
 class Item(models.Model):
     item_name = models.CharField(max_length=60)
@@ -82,13 +82,15 @@ class Shoes(Item):
     ]
     size = models.CharField(max_length=4, choices=SIZE_CHOICES)
 
-# classes for base user, patron, and librarian.
+# classes for patron and librarian.
 
-#class BaseUser(AbstractUser):
-#    email = models.EmailField(max_length=20, unique=True)
-#    name = models.CharField(max_length=120)
+class Patron(models.Model):
+    patron = models.OneToOneField(User, on_delete=models.CASCADE)
+    def __str__(self):
+        return f'{self.user.email} Patron Profile'
 
-#class Patron(BaseUser):
-
-#class Librarian(BaseUser):
+class Librarian(models.Model):
+    librarian = models.OneToOneField(User, on_delete=models.CASCADE)
+    def __str__(self):
+        return f'{self.user.email} Librarian Profile'
 
