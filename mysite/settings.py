@@ -38,6 +38,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'bootstrap5',
+
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "allauth.socialaccount.providers.google",  # Google login support
+    "closet",  # Your main app
 ]
 
 MIDDLEWARE = [
@@ -48,6 +55,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    "allauth.account.middleware.AccountMiddleware",
 ]
 
 ROOT_URLCONF = 'mysite.urls'
@@ -99,6 +108,52 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
+]
+
+SITE_ID = 1
+
+LOGIN_REDIRECT_URL = "http://127.0.0.1:8000/closet/dashboard/"  # Redirect users after login
+# LOGIN_REDIRECT_URL = "http://127.0.0.1:8000/accounts/3rdparty/"  # Redirect users after login
+
+LOGOUT_REDIRECT_URL = "/"  # Redirect after logout
+
+# ACCOUNT_AUTHENTICATION_METHOD = "email" Deprecated
+ACCOUNT_LOGIN_METHODS = {"email"}
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = False
+
+
+ACCOUNT_EMAIL_VERIFICATION = "none"  # Disable email verification
+SOCIALACCOUNT_AUTO_SIGNUP = True  # Allow auto signup with Google
+
+# ACCOUNT_ADAPTER = "allauth.account.adapter.DefaultAccountAdapter"
+# SOCIALACCOUNT_ADAPTER = "allauth.socialaccount.adapter.DefaultSocialAccountAdapter"
+# SOCIALACCOUNT_AUTO_SIGNUP = True  # Automatically link accounts instead of requiring sign-up
+# SOCIALACCOUNT_EMAIL_VERIFICATION = "none"  # Disable email verification prompt
+# SOCIALACCOUNT_EMAIL_REQUIRED = False  # Avoid duplicate email checks
+# SOCIALACCOUNT_QUERY_EMAIL = True  # Use Google-provided email
+# SOCIALACCOUNT_STORE_TOKENS = False  # Optional: Don't store OAuth tokens
+
+SOCIALACCOUNT_PROVIDERS = {
+    "google": {
+        "SCOPE": [
+            "profile",
+            "email",
+        ],
+        "AUTH_PARAMS": {
+            "access_type": "online",
+        },
+        "APP": {
+            "client_id": "160557790296-2nuf6ke6s3bhovhj32qpmduhgmr7dp6d.apps.googleusercontent.com",
+            "secret": "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",
+        }
+    }
+}
 
 
 # Internationalization
