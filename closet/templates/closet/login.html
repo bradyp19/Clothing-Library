@@ -30,14 +30,14 @@
         <!-- Check if user is authenticated -->
         {% if user.is_authenticated %}
             <p>You are logged in as <strong>{{ user.email }}</strong></p>
-            <a href="{% url 'account_logout' %}" class="btn btn-danger">Logout</a>
+            <a href="{% url 'closet:dashboard' %}" class="btn btn-outline-info" type ="submit">Continue to Dashboard</a>
+            <a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
         {% else %}
             <p>Please log in to continue.</p>
             <!-- Google Login Button -->
-            <a href="{% provider_login_url 'google' %}" class="btn btn-primary">Login with Google</a>
-
-            <!-- Skip Login Button -->
-            <a href="{% url 'dashboard' %}" class="btn btn-secondary">Skip Login</a>
+            <a href="{% provider_login_url 'google' %}" class="btn btn-primary">
+                Login
+            </a>
         {% endif %}
     </div>
 

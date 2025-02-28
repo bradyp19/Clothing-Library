@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 class Item(models.Model):
     item_name = models.CharField(max_length=60)
@@ -80,3 +81,16 @@ class Shoes(Item):
         ("13", "13"),
     ]
     size = models.CharField(max_length=4, choices=SIZE_CHOICES)
+
+# classes for patron and librarian.
+
+class Patron(models.Model):
+    patron = models.OneToOneField(User, on_delete=models.CASCADE)
+    def __str__(self):
+        return f'{self.user.email} Patron Profile'
+
+class Librarian(models.Model):
+    librarian = models.OneToOneField(User, on_delete=models.CASCADE)
+    def __str__(self):
+        return f'{self.user.email} Librarian Profile'
+

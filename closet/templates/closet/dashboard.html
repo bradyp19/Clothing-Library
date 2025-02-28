@@ -9,14 +9,14 @@
 <!-- Account Button -->
 <a href="http://127.0.0.1:8000/accounts/3rdparty/" class="btn btn-primary">Account</a>
 
-<!-- Patron & Librarian Selection -->
+<!-- Patron Selection -->
 <h3>Select Your Role:</h3>
-<a href="#" class="btn btn-success">Patron</a> 
-<!-- change # to page after user made the choice -->
-<a href="#" class="btn btn-warning">Librarian</a>
+<a href="{% url 'closet:patron' %}" class="btn btn-success">Patron</a>
+
+<a href="{% url 'closet:librarian' %}" class="btn btn-success">Librarian</a>
 
 <!-- Logout Link -->
-<p><a href="{% url 'account_logout' %}" class="btn btn-danger">Logout</a></p>
+<p><a href="{% url 'logout' %}" class="btn btn-danger">Logout</a></p>
 
 <footer>
     <p>&copy; 2025 Closet App</p>
