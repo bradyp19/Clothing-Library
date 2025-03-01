@@ -7,7 +7,6 @@ from django.views.generic.list import ListView
 
 from .forms import ItemForm
 from closet.models import Item, Clothing, Shoes
-from .models import Librarian, Patron
 
 
 # class LoginView(View):

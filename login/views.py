@@ -6,8 +6,8 @@ from django.contrib.auth import login, logout, authenticate
 from django.urls import reverse
 from django.views.generic.list import ListView
 
-from .models import Item, Clothing, Shoes, Librarian, Patron
-from .forms import LoginForm
+from .models import Librarian, Patron
+from .forms import LoginForm         
 
 # class LoginView(View):
 #     template_name = "closet/login.html"
@@ -15,7 +15,7 @@ from .forms import LoginForm
     #     return render(request, self.template_name)
 
 class LoginView(View):
-    template_name = "closet/login.html"
+    template_name = "login/login.html"
 
     def get(self, request):
         form = LoginForm()
