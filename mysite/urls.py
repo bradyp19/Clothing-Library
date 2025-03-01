@@ -23,7 +23,7 @@ urlpatterns = [
 
     path("closet/", include("closet.urls")), # Closet App - Other features [ADD implemented now]
 
-    path("auth/", include("login.urls")),  # Login, Dashboard, Patron, Librarian
+    path("start/", include("login.urls")),  # Login, Dashboard, Patron, Librarian
     path('accounts/', include('allauth.urls')), # Google login
 
     # path('login/', auth_views.LoginView.as_view(template_name='login/login.html'), name='login'),

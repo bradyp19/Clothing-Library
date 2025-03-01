@@ -32,7 +32,7 @@
         {% if user.is_authenticated %}
             <p>You are logged in as <strong>{{ user.email }}</strong></p>
             <a href="{% url 'login:dashboard' %}" class="btn btn-outline-info" type ="submit">Continue to Dashboard</a>
-            <a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
+            <a href="{% url 'login:logout' %}" class="btn btn-danger">Logout</a>
         {% else %}
             <p>Please log in to continue.</p>
             <!-- Google Login Button -->
