@@ -44,7 +44,9 @@ INSTALLED_APPS = [
     "allauth.account",
     "allauth.socialaccount",
     "allauth.socialaccount.providers.google",  # Google login support
-    "closet",  # Your main app
+    
+    "closet",  # Your main apps
+    "login",
 ]
 
 MIDDLEWARE = [

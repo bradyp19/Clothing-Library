@@ -7,7 +7,6 @@ from django.urls import reverse
 from django.views.generic.list import ListView
 
 from .models import Item, Clothing, Shoes, Librarian, Patron
-from .forms import ItemForm
 from .forms import LoginForm
 
 # class LoginView(View):
@@ -39,14 +38,14 @@ def logout_view(request):
 
 @login_required
 def dashboard(request):
-    return render(request, "closet/dashboard.html", {"user": request.user})
+    return render(request, "login/dashboard.html", {"user": request.user}) 
 
 @login_required
-class PatronView(ListView):
-    model = Patron
-    template_name = "closet/patron_list.html"
+def patron_list(request):
+    patrons = Patron.objects.all()
+    return render(request, "login/patron_list.html", {"patrons": patrons})
 
 @login_required
-class LibrarianView(ListView):
-    model = Librarian
-    template_name = "closet/librarian_list.html"
+def librarian_list(request):
+    librarians = Librarian.objects.all()
+    return render(request, "login/librarian_list.html", {"librarians": librarians})

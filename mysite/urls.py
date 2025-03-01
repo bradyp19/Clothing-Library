@@ -20,8 +20,13 @@ from django.urls import include, path
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("closet/", include("closet.urls")),
-    path('accounts/', include('allauth.urls')),
-    path('login/', auth_views.LoginView.as_view(template_name='closet/login.html'), name='login'),
-    path('logout/', auth_views.LogoutView.as_view(template_name='closet/logout.html'), name='logout'),
+
+    path("closet/", include("closet.urls")), # Closet App - Other features [ADD implemented now]
+
+    path("auth/", include("login.urls")),  # Login, Dashboard, Patron, Librarian
+    path('accounts/', include('allauth.urls')), # Google login
+
+    # path('login/', auth_views.LoginView.as_view(template_name='login/login.html'), name='login'),
+    # path('logout/', auth_views.LogoutView.as_view(template_name='login/logout.html'), name='logout'),
+    
 ]
