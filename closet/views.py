@@ -5,18 +5,19 @@ from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.views.generic.list import ListView
 
-from .models import Item, Clothing, Shoes, Librarian, Patron
 from .forms import ItemForm
+from closet.models import Item, Clothing, Shoes
 
-class LoginView(View):
-    template_name = "closet/login.html"
 
-    def get(self, request, *args, **kwargs):  # Add GET request handling
-        return render(request, self.template_name)
+# class LoginView(View):
+#     template_name = "closet/login.html"
 
-@login_required
-def dashboard(request):
-    return render(request, "closet/dashboard.html", {"user": request.user})
+#     def get(self, request, *args, **kwargs):  # Add GET request handling
+#         return render(request, self.template_name)
+
+# @login_required
+# def dashboard(request):
+#     return render(request, "closet/dashboard.html", {"user": request.user})
 
 class AddView(generic.CreateView):
     model = Item
@@ -42,12 +43,5 @@ class AddView(generic.CreateView):
             shoes.save_base(raw=True)
         return redirect(reverse("closet:dashboard")) # change this to redirect to desired page
 
-class PatronView(ListView):
-    model = Patron
-    template_name = "closet/patron_list.html"
-
-class LibrarianView(ListView):
-    model = Librarian
-    template_name = "closet/librarian_list.html"
 
 
