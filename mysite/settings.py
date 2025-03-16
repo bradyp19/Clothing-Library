@@ -40,14 +40,22 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'bootstrap5',
 
-    "allauth",
-    "allauth.account",
-    "allauth.socialaccount",
-    "allauth.socialaccount.providers.google",  # Google login support
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',  # Google login support
     
-    "closet",  # Your main apps
-    "login",
+    'closet',  # Your main apps
+    'login',
+    'storages',
 ]
+AWS_ACCESS_KEY_ID = 'AKIAUSOSP6BBH54OGJ7U'
+AWS_SECRET_ACCESS_KEY = 'TF7+Ny+KBvRgxpWqMj1Yf/dE2nqeM/QTyFlYpr3O'
+AWS_STORAGE_BUCKET_NAME = 'cs3240cla'
+AWS_S3_REGION_NAME = 'us-east-2'
+AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
+AWS_DEFAULT_ACL = 'public-read'
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
