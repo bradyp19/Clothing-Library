@@ -2,7 +2,7 @@ name: Django CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "clothingmodel" ]
   pull_request:
     branches: [ "main" ]
 
@@ -28,3 +28,14 @@ jobs:
     - name: Run Tests
       run: |
         python manage.py test
+    - name: Deploy to Heroku
+      uses: akhileshns/heroku-deploy@v3.12.13
+      with:
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+          heroku_app_name: ${{ secrets.HEROKU_APP_NAME }}
+          heroku_email: ${{ secrets.HEROKU_EMAIL }}
+      env:
+          HD_AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          HD_AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          HD_AWS_STORAGE_BUCKET_NAME: ${{ secrets.AWS_STORAGE_BUCKET_NAME }}
+          HD_AWS_S3_REGION_NAME: ${{ secrets.AWS_S3_REGION_NAME }}
