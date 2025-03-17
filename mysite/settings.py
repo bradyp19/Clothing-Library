@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',  # Google login support
-    
+
     'closet',  # Your main apps
     'login',
     'storages',
@@ -128,8 +128,10 @@ AUTHENTICATION_BACKENDS = [
 
 SITE_ID = 1
 
-LOGIN_REDIRECT_URL = "http://127.0.0.1:8000/start/dashboard/"  # Redirect users after login
+# LOGIN_REDIRECT_URL = "http://127.0.0.1:8000/start/dashboard/"  # Redirect users after login
 # LOGIN_REDIRECT_URL = "http://127.0.0.1:8000/accounts/3rdparty/"  # Redirect users after login
+LOGIN_REDIRECT_URL = 'http://127.0.0.1:8000/start/profile-setup/'
+
 
 LOGOUT_REDIRECT_URL = "/"  # Redirect after logout, CAN BE CHANGED TO THE LOGOUT PAGE
 

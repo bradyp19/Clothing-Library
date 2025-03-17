@@ -1,0 +1,18 @@
+{% extends "login/base.html" %}
+{% block title %}Edit Profile{% endblock %}
+{% block content %}
+
+    <div class="card mx-auto" style="max-width: 500px;">
+    <div class="card-body">
+        <h2 class="card-title text-center mb-4">Edit Your Profile</h2>
+        <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <div class="d-grid">
+            <button type="submit" class="btn btn-primary">Save</button>
+        </div>
+        </form>
+    </div>
+    </div>
+
+{% endblock %}

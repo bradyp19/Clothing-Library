@@ -1,22 +1,43 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
-<head>
+
+    <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Closet App</title>
-</head>
-<body>
-    <header>
-        <!-- <h1>Welcome to Closet Dashboard</h1> -->
-    </header>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Closet App{% endblock %}</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'login/style.css' %}">
+    </head>
 
-    <main>
-        {% block content %}
-        {% endblock %}
-    </main>
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+          <div class="container">
+            <a class="navbar-brand" href="#">Closet APP</a>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav ms-auto">
+                {% if user.is_authenticated %}
+                  <li class="nav-item"><a class="nav-link" href="{% url 'login:profile_edit' %}">Edit Profile</a></li>
+                  <li class="nav-item"><a class="nav-link" href="{% url 'account_logout' %}">Logout</a></li>
+                {% else %}
+                  <li class="nav-item"><a class="nav-link" href="{% url 'account_login' %}">Login</a></li>
+                  <li class="nav-item"><a class="nav-link" href="{% url 'account_signup' %}">Signup</a></li>
+                {% endif %}
+              </ul>
+            </div>
+          </div>
+        </nav>
+        <div class="container my-5">
+          {% block content %}{% endblock %}
+        </div>
+        <footer class="bg-light text-center py-3">
+          <p class="mb-0">© 2025 Closet APP</p>
+        </footer>
+        <!-- Bootstrap JS -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
 
-    <footer>
-        <!-- <p>&copy; 2025 Closet App</p> -->
-    </footer>
-</body>
 </html>
