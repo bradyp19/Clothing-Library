@@ -31,8 +31,6 @@ jobs:
     - name: Install Heroku CLI
       run: |
         curl https://cli-assets.heroku.com/install.sh | sh
-    - name: Add Heroku git remote
-      run: git remote add heroku https://git.heroku.com/project-a-07.git
     - name: Deploy to Heroku
       uses: akhileshns/heroku-deploy@v3.12.13
       with:
