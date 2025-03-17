@@ -36,7 +36,7 @@ jobs:
       with:
           heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
           heroku_app_name: "project-a-07"
-          heroku_email: ${{ secrets.HEROKU_EMAIL }}
+          heroku_email: "grace4ko@gmail.com"
       env:
           HD_AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           HD_AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
