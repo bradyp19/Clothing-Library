@@ -6,6 +6,7 @@ from django.urls import reverse
 from django.views.generic.list import ListView
 
 from .forms import ItemForm
+from .filters import ItemFilter
 from closet.models import Item, Clothing, Shoes, Images
 
 class AddView(generic.CreateView):
@@ -46,6 +47,10 @@ class IndexView(generic.ListView):
 
     def get_queryset(self):
             return Item.objects.all()
+
+def item_list(request):
+    f = ItemFilter(request.GET, queryset=Item.objects.all())
+    return render(request, 'closet/closet_index.html', {'filter': f})
 
 #using this instead of using generic DetailView, so in urls.py pk changed to item_id
 def item_detail(request, item_id):
