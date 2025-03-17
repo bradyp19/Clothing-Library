@@ -8,7 +8,7 @@ class ItemForm(forms.ModelForm):
         ("SHOES", "Shoes"),
     ]
     item_type = forms.ChoiceField(choices=ITEM_TYPE_CHOICES, widget=forms.Select(attrs={"id": "item-type"}))
-    images = forms.FileField(required=True, widget=forms.ClearableFileInput(attrs={'multiple': True}))
+    images = forms.FileField(required=True, widget=MultiFileInput(attrs={'multiple': True}))
     images = forms.ImageField(required=True, widget=MultiFileInput(attrs={'multiple': True}))
     class Meta:
         model = Item
