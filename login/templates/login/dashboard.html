@@ -1,26 +1,24 @@
 {% extends "login/base.html" %}
-
+{% block title %}Dashboard{% endblock %}
 {% block content %}
 
-    <h1>Welcome to Closet Dashboard</h1>
+    <!-- Not needed anymore -->
 
-    <h2>Welcome, {{ user.email }}!</h2>
-    <p>You are successfully logged in.</p>
-
-    <!-- Account Button -->
-    <a href="http://127.0.0.1:8000/accounts/3rdparty/" class="btn btn-primary">Account</a>
-
-    <!-- Patron Selection -->
-    <h3>Select Your Role:</h3>
-    <a href="{% url 'login:patron' %}" class="btn btn-success">Patron</a>
-
-    <a href="{% url 'login:librarian' %}" class="btn btn-success">Librarian</a>
-
-    <!-- Logout Link -->
-    <p><a href="{% url 'login:logout' %}" class="btn btn-danger">Logout</a></p>
-
-    <footer>
-        <p>&copy; 2025 Closet App</p>
-    </footer>
+    <div class="text-center">
+        <h1>Welcome to Closet Dashboard</h1>
+        <h2>Welcome, {{ user.email }}!</h2>
+        <p>You are successfully logged in.</p>
+        <div class="my-3">
+        <a href="{% url 'account_login' %}" class="btn btn-primary">Account</a>
+        </div>
+        <h3>Select Your Role:</h3>
+        <div class="d-grid gap-2 col-6 mx-auto">
+        <a href="{% url 'login:patron' %}" class="btn btn-success">Patron</a>
+        <a href="{% url 'login:librarian' %}" class="btn btn-success">Librarian</a>
+        </div>
+        <div class="mt-3">
+        <a href="{% url 'login:logout' %}" class="btn btn-danger">Logout</a>
+        </div>
+    </div>
 
 {% endblock %}
