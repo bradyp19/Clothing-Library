@@ -43,6 +43,15 @@
         </ul>
         {% endif %}
 
+        {% if item.images.all %}
+            <div class="p-2">
+            {% for image in item.images.all %}
+                <img src="{{ image.image.url }}" alt="Image of {{ item.item_name }}" class="img-fluid mb-2" style="max-width: 300px;">
+            {% endfor %}
+            </div>
+        {% else %}
+            <p>No images available.</p>
+        {% endif %}
     </div>
     <div class = "p-2">
         <a class = "navbar-brand ms-auto" href="{% url 'closet:closet_index' %}">Back to Closet</a>
