@@ -16,7 +16,7 @@ class Profile(models.Model):
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, blank=True)
     profile_picture = models.ImageField(
         upload_to=profile_picture_path,
-        default='profile_pics/default.jpg',  # permanent default
+        default='profile_pics/hotel.jpg',  # permanent default
         blank=False,
         null=False
     )
