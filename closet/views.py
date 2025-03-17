@@ -44,9 +44,8 @@ class IndexView(generic.ListView):
     template_name = "closet/closet_index.html"
     context_object_name = "items_in_closet"
 
-    def get_queryset(self, request):
-        qs = super().get_queryset(request)
-        return Item.objects.all()
+    def get_queryset(self):
+            return Item.objects.all()
 
 #using this instead of using generic DetailView, so in urls.py pk changed to item_id
 def item_detail(request, item_id):
