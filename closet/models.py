@@ -84,7 +84,7 @@ class Shoes(Item):
 
 class Images(models.Model):
     item = models.ForeignKey(Item, on_delete=models.CASCADE, related_name='images')
-    image = models.ImageField(upload_to='closet_items/')
+    image = models.FileField(upload_to='closet_items/')
     order = models.IntegerField(default=0)
 
     class Meta:
