@@ -31,8 +31,11 @@ class AddView(generic.CreateView):
             )
             shoes.save_base(raw=True)
         
-        if self.request.FILES.getlist("images"):
-            images = self.request.FILES.getlist("images")
-            for index, image in enumerate(images):
-                Images.objects.create(item=item, image=image, order=index)
+        if self.request.method == 'POST':
+            if "images" in self.request.FILES:
+                images = self.request.FILES.getlist("images")
+                for index, image in enumerate(images):
+                    uploaded_image = image
+                    uploaded_image.seek(0)  
+                    Images.objects.create(item=item, image=uploaded_image, order=index)
         return redirect(reverse("closet:dashboard")) # change this to redirect to desired page
