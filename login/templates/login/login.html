@@ -36,10 +36,13 @@
     
     <!-- Google Login Option -->
     <div class="mb-3 text-center">
-      <p>{% trans "Or log in with:" %}</p>
       <a href="{% provider_login_url 'google' %}" class="btn btn-danger">
         {% trans "Login with Google" %}
       </a>
+    </div>
+    
+    <div class="mb-3 text-center">
+        <a href="{% url 'account_signup' %}" class="btn btn-link">{% trans "Sign Up" %}</a>
     </div>
     
     <div class="text-center mt-4">
