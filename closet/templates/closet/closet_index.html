@@ -24,7 +24,12 @@
       {% else %}
           <p>No items in closet.</p>
       {% endif %}
-      <a class = "navbar-brand" href="{% url 'closet:add' %}">Add an item</a>
+        <div class="my-3">
+            <a href="{% url 'closet:add' %}" class="btn btn-primary">Add an Item</a>
+        </div>
+        <div class="my-3">
+            <a href="{% url 'login:librarian_dashboard' %}" class="btn btn-primary">Go To Dashboard</a>
+        </div>
     </div>
   </div>
 
