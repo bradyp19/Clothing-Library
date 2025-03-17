@@ -31,7 +31,6 @@ jobs:
     - name: Install Heroku CLI
       run: |
         curl https://cli-assets.heroku.com/install.sh | sh
-        sudo apt-get install -y heroku
     - name: Deploy to Heroku
       uses: akhileshns/heroku-deploy@v3.12.13
       with:
