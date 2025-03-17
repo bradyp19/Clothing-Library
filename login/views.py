@@ -9,10 +9,6 @@ from django.views.generic.list import ListView
 from .models import Librarian, Patron, Profile
 from .forms import LoginForm, ProfileForm        
 
-# class LoginView(View):
-#     template_name = "closet/login.html"
-    # def get(self, request, *args, **kwargs):  # Add GET request handling
-    #     return render(request, self.template_name)
 
 class LoginView(View):
     template_name = "login/login.html"
@@ -38,7 +34,7 @@ def logout_view(request):
     return redirect("login:login")
 
 
-@login_required
+@login_required #Old, not need anymore
 def dashboard(request):
     return render(request, "login/dashboard.html", {"user": request.user}) 
 
@@ -57,7 +53,7 @@ def profile_setup_view(request):
 
     # Otherwise, show the form
     if request.method == 'POST':
-        form = ProfileForm(request.POST, instance=profile)
+        form = ProfileForm(request.POST, request.FILES, instance=profile)
         if form.is_valid():
             form.save()
             # Redirect based on the chosen role

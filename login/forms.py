@@ -5,7 +5,7 @@ from .models import Profile
 class ProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
-        fields = ['role']  # Add other fields if you have them
+        fields = ['role', 'profile_picture']  # Add other fields if you have them
 
 
 class LoginForm(forms.Form):
