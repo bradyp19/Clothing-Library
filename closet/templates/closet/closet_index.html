@@ -1,0 +1,23 @@
+{% extends "closet/base.html" %}
+{% block title %} Closet View {% endblock %}
+{% block content %}
+
+<div class = "p-2">
+    <div class = "container mt-5">
+      <h2>Closet</h2>
+      {% if items_in_closet %}
+          <ul class = "list-group">
+          {% for item in items_in_closet %}
+            <li class = "list-group-item">
+                <a href="{% url 'closet:item_detail' item.id %}">{{ item.item_name }}</a>
+            </li>
+          {% endfor %}
+          </ul>
+      {% else %}
+          <p>No items in closet.</p>
+      {% endif %}
+      <a class = "navbar-brand" href="{% url 'closet:add' %}">Add an item</a>
+    </div>
+  </div>
+
+{% endblock %}

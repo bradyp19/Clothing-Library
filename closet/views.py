@@ -1,4 +1,4 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect, get_object_or_404
 from django.http import HttpResponseRedirect
 from django.views import View, generic
 from django.contrib.auth.decorators import login_required
@@ -21,7 +21,8 @@ class AddView(generic.CreateView):
         if item_type == "CLOTHING":
             clothing = Clothing(
                 item_ptr=item, #multi-table inheritance 1 to 1 relationship
-                size=form.cleaned_data["clothing_size"]
+                size=form.cleaned_data["clothing_size"],
+                clothing_type=form.cleaned_data["clothing_type"]
             )
             clothing.save_base(raw=True) #dont save parent Item instance again
         elif item_type == "SHOES":
@@ -36,3 +37,20 @@ class AddView(generic.CreateView):
             for index, image in enumerate(images):
                 Images.objects.create(item=item, image=image, order=index)
         return redirect(reverse("closet:dashboard")) # change this to redirect to desired page
+
+class IndexView(generic.ListView):
+    template_name = "closet/closet_index.html"
+    context_object_name = "items_in_closet"
+
+    def get_queryset(self):
+        """Return the last five published qucestions (not including those set to be published in the future)."""
+        return Item.objects.all()
+
+#using this instead of using generic DetailView, so in urls.py pk changed to item_id
+def item_detail(request, item_id):
+    item = get_object_or_404(Item, pk=item_id)
+
+    item = item.clothing if hasattr(item, 'clothing') else item
+    item = item.shoes if hasattr(item, 'shoes') else item
+
+    return render(request, 'closet/item_detail.html', {'item': item})
