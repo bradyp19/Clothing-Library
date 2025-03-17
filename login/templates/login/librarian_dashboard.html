@@ -5,6 +5,13 @@
     <div class="text-center">
         <h2>Librarian Dashboard</h2>
         <p>Welcome, {{ user.username }}. This is your librarian dashboard!</p>
+
+        {% if user.profile.profile_picture %}
+        <img src="{{ user.profile.profile_picture.url }}" alt="Profile Picture" style="max-width: 200px; border-radius: 50%;">
+        {% else %}
+            <p>No profile picture uploaded.</p>
+        {% endif %}
+
     </div>
 
 {% endblock %}
