@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',  # Google login support
     
+    'django_filters',
+
     'closet',  # Your main apps
     'login',
     'storages',
