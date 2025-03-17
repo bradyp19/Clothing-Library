@@ -1,9 +1,14 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Closet App</title>
+    <title>{% block title %}Closet App{% endblock %}</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'closet/style.css' %}">
 </head>
 <body>
     <header>
@@ -15,8 +20,9 @@
         {% endblock %}
     </main>
 
-    <footer>
-        <!-- <p>&copy; 2025 Closet App</p> -->
+    <footer class="bg-light text-center py-3">
+        <p class="mb-0">© 2025 Closet APP</p>
     </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
