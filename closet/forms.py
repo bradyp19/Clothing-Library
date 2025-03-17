@@ -1,5 +1,5 @@
 from django import forms
-
+from .widgets import MultiFileInput  # Import your custom widget
 from .models import Item, Clothing, Shoes, Images
 
 class ItemForm(forms.ModelForm):
@@ -8,7 +8,7 @@ class ItemForm(forms.ModelForm):
         ("SHOES", "Shoes"),
     ]
     item_type = forms.ChoiceField(choices=ITEM_TYPE_CHOICES, widget=forms.Select(attrs={"id": "item-type"}))
-    images = forms.ImageField(required=True, widget=forms.ClearableFileInput(attrs={'multiple': True}))
+    images = forms.ImageField(required=True, widget=MultiFileInput(attrs={'multiple': True}))
     class Meta:
         model = Item
         fields = ["item_name", "brand", "condition", "fit", "occasion", "gender"]
