@@ -25,22 +25,9 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
+    - name: Run Migrations
+      run: python manage.py migrate
     - name: Run Tests
       run: |
         python manage.py test
-    - name: Install Heroku CLI
-      run: |
-        curl https://cli-assets.heroku.com/install.sh | sh
-    - name: Add Heroku git remote
-      run: git remote add heroku https://git.heroku.com/project-a-07.git
-    - name: Deploy to Heroku
-      uses: akhileshns/heroku-deploy@v3.12.13
-      with:
-          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-          heroku_app_name: "project-a-07"
-          heroku_email: "grace4ko@gmail.com"
-      env:
-          HD_AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          HD_AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          HD_AWS_STORAGE_BUCKET_NAME: ${{ secrets.AWS_STORAGE_BUCKET_NAME }}
-          HD_AWS_S3_REGION_NAME: ${{ secrets.AWS_S3_REGION_NAME }}
+    
