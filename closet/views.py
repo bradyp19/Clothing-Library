@@ -36,7 +36,7 @@ class AddView(generic.CreateView):
             images = self.request.FILES.getlist("images")
             for index, image in enumerate(images):
                 Images.objects.create(item=item, image=image, order=index)
-        return redirect(reverse("closet:dashboard")) # change this to redirect to desired page
+        return redirect(reverse("closet:closet_index")) # change this to redirect to desired page
 
 class IndexView(generic.ListView):
     template_name = "closet/closet_index.html"
