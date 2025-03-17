@@ -8,17 +8,6 @@ from django.views.generic.list import ListView
 from .forms import ItemForm
 from closet.models import Item, Clothing, Shoes, Images
 
-
-# class LoginView(View):
-#     template_name = "closet/login.html"
-
-#     def get(self, request, *args, **kwargs):  # Add GET request handling
-#         return render(request, self.template_name)
-
-# @login_required
-# def dashboard(request):
-#     return render(request, "closet/dashboard.html", {"user": request.user})
-
 class AddView(generic.CreateView):
     model = Item
     form_class = ItemForm
@@ -46,6 +35,3 @@ class AddView(generic.CreateView):
         for index, image in enumerate(images):
             Images.objects.create(item=item, image=image, order=index)
         return redirect(reverse("closet:dashboard")) # change this to redirect to desired page
-
-
-
