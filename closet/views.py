@@ -6,7 +6,7 @@ from django.urls import reverse
 from django.views.generic.list import ListView
 
 from .forms import ItemForm
-from closet.models import Item, Clothing, Shoes
+from closet.models import Item, Clothing, Shoes, Images
 
 
 # class LoginView(View):
@@ -41,6 +41,10 @@ class AddView(generic.CreateView):
                 size=form.cleaned_data["shoes_size"]
             )
             shoes.save_base(raw=True)
+        
+        images = self.request.FILES.getlist('images')
+        for index, image in enumerate(images):
+            Images.objects.create(item=item, image=image, order=index)
         return redirect(reverse("closet:dashboard")) # change this to redirect to desired page
 
 
