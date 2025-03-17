@@ -3,6 +3,7 @@
 {% block content %}
 
     <div class="text-center">
+
         <h2>Librarian Dashboard</h2>
         <p>Welcome, {{ user.username }}. This is your librarian dashboard!</p>
 
@@ -12,6 +13,11 @@
             <p>No profile picture uploaded.</p>
         {% endif %}
 
+        <!-- Add a button to go to the Add page -->
+        <div class="my-3">
+            <a href="{% url 'closet:add' %}" class="btn btn-primary">Add New Item</a>
+
+        </div>
     </div>
 
 {% endblock %}
