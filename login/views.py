@@ -71,7 +71,7 @@ def profile_setup_view(request):
 def profile_edit_view(request):
     profile = request.user.profile  # Assuming you always have a Profile
     if request.method == 'POST':
-        form = ProfileForm(request.POST, instance=profile)
+        form = ProfileForm(request.POST, request.FILES, instance=profile)
         if form.is_valid():
             form.save()
             # Redirect to the appropriate dashboard
