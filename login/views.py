@@ -7,7 +7,7 @@ from django.urls import reverse
 from django.views.generic.list import ListView
 
 from .models import Librarian, Patron, Profile
-from .forms import LoginForm, ProfileForm        
+from .forms import LoginForm, PatronProfileForm, LibrarianProfileForm        
 
 
 class LoginView(View):
@@ -45,53 +45,75 @@ def dashboard(request):
 
 @login_required
 def profile_setup_view(request):
+    # Get or create the user's profile
     profile, created = Profile.objects.get_or_create(user=request.user)
-
-    # If the profile is already complete, go straight to the dashboard
+    
+    # If profile is already complete, redirect to the appropriate dashboard
     if profile.is_complete:
         if profile.role == 'patron':
             return redirect('login:patron_dashboard')
         else:
             return redirect('login:librarian_dashboard')
-
+    
+    # Use the PatronProfileForm for setup (no role field)
     if request.method == 'POST':
-        form = ProfileForm(request.POST, request.FILES, instance=profile)
+        form = PatronProfileForm(request.POST, request.FILES, instance=profile)
         if form.is_valid():
             instance = form.save(commit=False)
-            # Force the role to 'patron' unless the user is already a librarian
-            if request.user.profile.role != 'librarian':
-                instance.role = 'patron'
+            # Force new profiles to be patrons
+            instance.role = 'patron'
             instance.save()
-            # Redirect based on the final role
-            if instance.role == 'patron':
-                return redirect('login:patron_dashboard')
-            else:
-                return redirect('login:librarian_dashboard')
+            return redirect('login:patron_dashboard')
     else:
-        form = ProfileForm(instance=profile)
-
+        form = PatronProfileForm(instance=profile)
+        
     return render(request, 'login/profile_setup.html', {'form': form})
 
 
+def librarian_required(view_func):
+    return user_passes_test(
+        lambda u: hasattr(u, 'profile') and u.profile.role == 'librarian',
+        login_url='login:login'
+    )(view_func)
+
+
 @login_required
-def profile_edit_view(request):
+def patron_profile_edit_view(request):
     profile = request.user.profile
+    # Ensure only patrons use this view.
+    if profile.role != 'patron':
+        return redirect('login:librarian_dashboard')
+    
     if request.method == 'POST':
-        form = ProfileForm(request.POST, request.FILES, instance=profile)
+        form = PatronProfileForm(request.POST, request.FILES, instance=profile)
         if form.is_valid():
-            instance = form.save(commit=False)
-            # Force the role to 'patron' unless the user is already a librarian
-            if request.user.profile.role != 'librarian':
-                instance.role = 'patron'
-            instance.save()
-            # Redirect to the appropriate dashboard
-            if instance.role == 'patron':
-                return redirect('login:patron_dashboard')
-            else:
-                return redirect('login:librarian_dashboard')
+            form.save()
+            return redirect('login:patron_dashboard')
     else:
-        form = ProfileForm(instance=profile)
-    return render(request, 'login/profile_edit.html', {'form': form})
+        form = PatronProfileForm(instance=profile)
+        
+    return render(request, 'login/patron_profile_edit.html', {'form': form})
+
+
+@login_required
+@librarian_required
+def librarian_profile_edit_view(request):
+    profile = request.user.profile
+    # Ensure only librarians use this view.
+    if profile.role != 'librarian':
+        return redirect('login:patron_dashboard')
+    
+    if request.method == 'POST':
+        form = LibrarianProfileForm(request.POST, request.FILES, instance=profile)
+        if form.is_valid():
+            # Optionally, you can ask for a double-check (confirmation) if a downgrade is attempted.
+            # For now, we simply save the submitted value.
+            form.save()
+            return redirect('login:librarian_dashboard')
+    else:
+        form = LibrarianProfileForm(instance=profile)
+        
+    return render(request, 'login/librarian_profile_edit.html', {'form': form})
 
 
 @login_required
@@ -102,12 +124,6 @@ def patron_dashboard_view(request):
 def librarian_dashboard_view(request):
     return render(request, 'login/librarian_dashboard.html')
 
-
-def librarian_required(view_func):
-    return user_passes_test(
-        lambda u: hasattr(u, 'profile') and u.profile.role == 'librarian',
-        login_url='login:login'
-    )(view_func)
 
 @login_required
 @librarian_required

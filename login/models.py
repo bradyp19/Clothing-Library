@@ -12,6 +12,7 @@ class Profile(models.Model):
         ('patron', 'Patron'),
         ('librarian', 'Librarian'),
     ]
+
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='patron')
     profile_picture = models.ImageField(

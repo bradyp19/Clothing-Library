@@ -22,11 +22,13 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                 {% if user.is_authenticated %}
-                    <li class="nav-item"><a class="nav-link" href="{% url 'login:profile_edit' %}">Edit Profile</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'account_logout' %}">Logout</a></li>
+                {% if user.profile.role == 'librarian' %}
+                    <a href="{% url 'login:librarian_profile_edit' %}" class="nav-link">Edit Profile</a>
+                    <a class="nav-link" href="{% url 'account_logout' %}">Logout</a>
                 {% else %}
-                    <li class="nav-item"><a class="nav-link" href="{% url 'account_login' %}">Login</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'account_signup' %}">Signup</a></li>
+                    <a href="{% url 'login:patron_profile_edit' %}" class="nav-link">Edit Profile</a>
+                    <a class="nav-link" href="{% url 'account_logout' %}">Logout</a>
+                {% endif %}
                 {% endif %}
                 </ul>
             </div>
