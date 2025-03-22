@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.views.generic.list import ListView
 
-from .forms import ItemForm
+from .forms import ItemForm, AddImageFormset 
 from .filters import ItemFilter
 from closet.models import Item, Clothing, Shoes, Images
 
@@ -14,33 +14,46 @@ class AddView(generic.CreateView):
     form_class = ItemForm
     template_name = "closet/add.html"
 
-    def form_valid(self, form):
-        item = form.save(commit=False)
-        item.save()
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.POST:
+            context['addimageformset'] = AddImageFormset(self.request.POST, self.request.FILES)
+        else:
+            context['addimageformset'] = AddImageFormset()
+        return context
 
-        item_type = form.cleaned_data["item_type"]
-        if item_type == "CLOTHING":
-            clothing = Clothing(
-                item_ptr=item, #multi-table inheritance 1 to 1 relationship
-                size=form.cleaned_data["clothing_size"],
-                clothing_type=form.cleaned_data["clothing_type"]
-            )
-            clothing.save_base(raw=True) #dont save parent Item instance again
-        elif item_type == "SHOES":
-            shoes = Shoes(
-                item_ptr=item,
-                size=form.cleaned_data["shoes_size"]
-            )
-            shoes.save_base(raw=True)
-        if self.request.method == 'POST':
-            if "images" in self.request.FILES:
-                images = self.request.FILES.getlist("images")
-                for index, image in enumerate(images):
-                    uploaded_image = image
-                    uploaded_image.seek(0)  
-                    Images.objects.create(item=item, image=uploaded_image, order=index)
-        return redirect(reverse("closet:closet_index")) # change this to redirect to desired page
-    
+    def form_valid(self, form):
+        context = self.get_context_data()
+        addimageformset = context['addimageformset']
+        
+        if form.is_valid() and addimageformset.is_valid():
+            item = form.save(commit=False)
+            item.save()
+
+            item_type = form.cleaned_data["item_type"]
+            if item_type == "CLOTHING":
+                clothing = Clothing(
+                    item_ptr=item, #multi-table inheritance 1 to 1 relationship
+                    size=form.cleaned_data["clothing_size"],
+                    clothing_type=form.cleaned_data["clothing_type"]
+                )
+                clothing.save_base(raw=True) #dont save parent Item instance again
+            elif item_type == "SHOES":
+                shoes = Shoes(
+                    item_ptr=item,
+                    size=form.cleaned_data["shoes_size"]
+                )
+                shoes.save_base(raw=True)
+     
+            images = addimageformset.save(commit=False)
+            for index, image in enumerate(images):
+                image.item = item
+                image.order = index
+                image.save()
+            return redirect(reverse("closet:closet_index")) # change this to redirect to desired page
+        else:
+            return self.render_to_response(self.get_context_data(form=form, addimageformset=addimageformset))
+
 class IndexView(generic.ListView):
     template_name = "closet/closet_index.html"
     context_object_name = "items_in_closet"
