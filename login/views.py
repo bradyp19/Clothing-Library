@@ -32,7 +32,7 @@ class LoginView(View):
                 #     profile.save()
                 if not profile.is_complete:
                     return redirect("login:profile_setup")
-                return redirect("dashboard")
+                return redirect("login:dashboard")
         return render(request, self.template_name, {"form": form})
 
 def logout_view(request):
