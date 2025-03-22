@@ -1,3 +1,14 @@
-from django.test import TestCase
+from django.test import TestCase, Client
+from django.urls import reverse
 
-# Create your tests here.
+class ClosetTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+
+    def test_closet_index_status_code(self):
+        response = self.client.get(reverse('closet:closet_index'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_closet_index_template_used(self):
+        response = self.client.get(reverse('closet:closet_index'))
+        self.assertTemplateUsed(response, 'closet/closet_index.html')
