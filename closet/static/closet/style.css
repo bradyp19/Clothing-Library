@@ -5,6 +5,23 @@
     margin: 0;
     padding: 0;
 }
+:root {
+    --accent: #385170;
+    accent-color: var(--accent);
+}
+
+legend {
+    font-weight: 700;
+    color: var(--accent);
+}
+
+fieldset {
+    border: 2px solid var(--accent);
+}
+
+fieldset > * + * {
+    margin-top: 0.5rem;
+}
 
 body {
     font-family: Arial, sans-serif;
