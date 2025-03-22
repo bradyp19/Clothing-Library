@@ -26,11 +26,8 @@ class LoginView(View):
             if user:
                 login(request, user)
                 # Get or create the user's profile.
-                profile, created = Profile.objects.get_or_create(user=user)
-                # if created:
-                #     profile.is_complete = False
-                #     profile.save()
-                if not profile.is_complete:
+                profile, created = Profile.objects.get_or_create(user=user, defaults={'setup_complete': False})
+                if created or not profile.is_complete:
                     return redirect("login:profile_setup")
                 return redirect("login:dashboard")
         return render(request, self.template_name, {"form": form})

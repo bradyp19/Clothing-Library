@@ -21,15 +21,18 @@ class Profile(models.Model):
         blank=False,
         null=False
     )
-
+    setup_complete = models.BooleanField(default=False)
     # Add more fields if needed, e.g. phone, address, etc.
 
+    # @property
+    # def is_complete(self):
+    #     # Simple check: consider 'role' as required. 
+    #     # Expand this if you have more required fields.
+    #     return bool(self.role) and bool(self.profile_picture)
     @property
     def is_complete(self):
-        # Simple check: consider 'role' as required. 
-        # Expand this if you have more required fields.
-        return bool(self.role) and bool(self.profile_picture)
-    
+        return self.setup_complete
+
 
 class Patron(models.Model):
     patron = models.OneToOneField(User, on_delete=models.CASCADE)
