@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 class Item(models.Model):
     item_name = models.CharField(max_length=60)
@@ -80,3 +81,11 @@ class Shoes(Item):
         ("13", "13"),
     ]
     size = models.CharField(max_length=4, choices=SIZE_CHOICES)
+
+class Images(models.Model):
+    item = models.ForeignKey(Item, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(upload_to='closet_items/')
+    order = models.IntegerField(default=0)
+
+    class Meta:
+        ordering = ['order']

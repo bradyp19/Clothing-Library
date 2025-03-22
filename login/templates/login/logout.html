@@ -1,0 +1,18 @@
+{% extends "login/base.html" %}
+{% load i18n %}
+{% block title %}Logout{% endblock %}
+
+{% block content %}
+<div class="card mx-auto" style="max-width: 400px;">
+  <div class="card-body text-center">
+    <h3 class="card-title mb-3">{% trans "Logout" %}</h3>
+    <p>{% trans "Are you sure you want to log out?" %}</p>
+    <form method="post" action="{% url 'account_logout' %}">
+      {% csrf_token %}
+      <div class="d-grid">
+        <button type="submit" class="btn btn-danger">{% trans "Logout" %}</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

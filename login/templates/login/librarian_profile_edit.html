@@ -1,0 +1,37 @@
+{% extends "login/base.html" %}
+{% load i18n %}
+{% block title %}Edit Librarian Profile{% endblock %}
+{% block content %}
+
+<div class="card mx-auto" style="max-width: 500px;">
+  <div class="card-body">
+    <h2 class="card-title text-center mb-4">Edit Your Profile (Librarian)</h2>
+    <p class="text-warning">Warning: You can downgrade your role here. Only change your role if you're sure.</p>
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <div class="d-grid">
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+      </div>
+    </form>
+    
+    <!-- Divider -->
+    <hr class="my-4">
+
+    <!-- Additional Account Settings (allauth pages) -->
+    <h5 class="text-center mb-3">Additional Settings</h5>
+    <ul class="list-group">
+      <li class="list-group-item">
+        <a href="{% url 'account_email' %}">{% trans "Change Email" %}</a>
+      </li>
+      <li class="list-group-item">
+        <a href="{% url 'account_change_password' %}">{% trans "Change Password" %}</a>
+      </li>
+      <li class="list-group-item">
+        <a href="{% url 'socialaccount_connections' %}">{% trans "Account Connections" %}</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+{% endblock %}

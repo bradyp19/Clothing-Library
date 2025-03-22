@@ -1,0 +1,60 @@
+{% extends "closet/base.html" %}
+{% block title %} Item Details {% endblock %}
+{% block content %}
+<div class = "container mt-5">
+    <div class = "p-2">
+        <h1>{{ item.item_name }}</h1>
+    </div>
+    <div class = "p-2">
+        <ul class="list-group list-group-horizontal">
+            <li class="list-group-item flex-shrink-1">Brand:</li>
+            <li class="list-group-item">{{item.brand}}</li>
+        </ul>
+        <ul class="list-group list-group-horizontal-sm">
+            <li class="list-group-item flex-shrink-1">Condition:</li>
+            <li class="list-group-item">{{item.get_condition_display}}</li>
+        </ul>
+        <ul class="list-group list-group-horizontal-md">
+            <li class="list-group-item flex-shrink-1">Fit:</li>
+            <li class="list-group-item">{{item.get_fit_display}}</li>
+        </ul>
+        <ul class="list-group list-group-horizontal-lg">
+            <li class="list-group-item flex-shrink-1">Occasion:</li>
+            <li class="list-group-item">{{item.get_occasion_display}}</li>
+        </ul>
+        <ul class="list-group list-group-horizontal-xl">
+            <li class="list-group-item flex-shrink-1">Gender:</li>
+            <li class="list-group-item">{{item.get_gender_display}}</li>
+        </ul>
+
+        {% if item.clothing %}
+        <ul class="list-group list-group-horizontal">
+            <li class="list-group-item flex-shrink-1">Size:</li>
+            <li class="list-group-item">{{ item.get_size_display }}</li>
+        </ul>
+        <ul class="list-group list-group-horizontal">
+            <li class="list-group-item flex-shrink-1">Clothing Type:</li>
+            <li class="list-group-item">{{ item.get_clothing_type_display }}</li>
+        </ul>
+        {% elif item.shoes %}
+        <ul class="list-group list-group-horizontal">
+            <li class="list-group-item flex-shrink-1">Size:</li>
+            <li class="list-group-item">{{ item.size }}</li>
+        </ul>
+        {% endif %}
+
+        {% if item.images.all %}
+            <div class="p-2">
+            {% for image in item.images.all %}
+                <img src="{{ image.image.url }}" alt="Image of {{ item.item_name }}" class="img-fluid mb-2" style="max-width: 300px;">
+            {% endfor %}
+            </div>
+        {% else %}
+            <p>No images available.</p>
+        {% endif %}
+    </div>
+    <div class = "p-2">
+        <a class = "navbar-brand ms-auto" href="{% url 'closet:closet_index' %}">Back to Closet</a>
+    </div>
+</div>
+{% endblock %}

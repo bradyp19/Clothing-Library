@@ -1,0 +1,53 @@
+{% extends "login/base.html" %}
+{% load i18n %}
+{% load socialaccount %}
+
+{% block title %}Closet App Login{% endblock %}
+
+{% block content %}
+<div class="card mx-auto" style="max-width: 400px;">
+  <div class="card-body">
+    <h3 class="card-title text-center mb-4">{% trans "Login" %}</h3>
+    
+    <!-- Display Django messages -->
+    {% if messages %}
+      <div class="alert alert-info">
+        {% for message in messages %}
+          {{ message }}
+        {% endfor %}
+      </div>
+    {% endif %}
+    
+    <!-- Traditional Login Form -->
+    <form method="post" action="{% url 'account_login' %}">
+      {% csrf_token %}
+      <div class="mb-3">
+        <label for="id_login" class="form-label">{% trans "Email or Username" %}</label>
+        <input type="text" class="form-control" id="id_login" name="login" placeholder="{% trans 'Enter email or username' %}">
+      </div>
+      <div class="mb-3">
+        <label for="id_password" class="form-label">{% trans "Password" %}</label>
+        <input type="password" class="form-control" id="id_password" name="password" placeholder="{% trans 'Enter password' %}">
+      </div>
+      <div class="d-grid mb-3">
+        <button type="submit" class="btn btn-primary">{% trans "Login" %}</button>
+      </div>
+    </form>
+    
+    <!-- Google Login Option -->
+    <div class="mb-3 text-center">
+      <a href="{% provider_login_url 'google' %}" class="btn btn-danger">
+        {% trans "Login with Google" %}
+      </a>
+    </div>
+    
+    <div class="mb-3 text-center">
+        <a href="{% url 'account_signup' %}" class="btn btn-link">{% trans "Sign Up" %}</a>
+    </div>
+    
+    <div class="text-center mt-4">
+      <a href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

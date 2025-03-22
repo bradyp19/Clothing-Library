@@ -15,10 +15,22 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
+from django.contrib.auth import views as auth_views
 from django.urls import include, path
+from django.views.generic.base import RedirectView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("closet/", include("closet.urls")),
-    path('accounts/', include('allauth.urls')),
+
+    path('', RedirectView.as_view(url='/start/login/', permanent=False), name='home'),
+    # comment the above line to show possible urls. Above line makes the page we go login page
+
+    path("start/", include("login.urls")),  # Login, Dashboard, Patron, Librarian
+    # path("", include("login.urls")),
+    path("closet/", include("closet.urls")), # Closet App - Other features [ADD implemented now]
+
+    path('accounts/', include('allauth.urls')), # Google login
+
+    # path('login/', auth_views.LoginView.as_view(template_name='login/login.html'), name='login'),
+    # path('logout/', auth_views.LogoutView.as_view(template_name='login/logout.html'), name='logout'),
 ]

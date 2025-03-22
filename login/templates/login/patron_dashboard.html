@@ -1,0 +1,17 @@
+{% extends "login/base.html" %}
+{% block title %}Patron Dashboard{% endblock %}
+{% block content %}
+
+    <div class="text-center">
+        <h2>Patron Dashboard</h2>
+        <p>Welcome, {{ user.username }}. This is your patron dashboard!</p>
+
+        {% if user.profile.profile_picture %}
+        <img src="{{ user.profile.profile_picture.url }}" alt="Profile Picture" style="max-width: 200px; border-radius: 50%;">
+        {% else %}
+            <p>No profile picture uploaded.</p>
+        {% endif %}
+
+    </div>
+    
+{% endblock %}

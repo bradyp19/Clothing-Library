@@ -1,0 +1,32 @@
+{% extends "login/base.html" %}
+{% block title %}Librarian Dashboard{% endblock %}
+{% block content %}
+
+    <div class="text-center">
+
+        <h2>Librarian Dashboard</h2>
+        <p>Welcome, {{ user.username }}. This is your librarian dashboard!</p>
+
+        {% if user.profile.profile_picture %}
+        <img src="{{ user.profile.profile_picture.url }}" alt="Profile Picture" style="max-width: 200px; border-radius: 50%;">
+        {% else %}
+            <p>No profile picture uploaded.</p>
+        {% endif %}
+
+        <!-- Add a button to go to the Add page -->
+        <div class="my-3">
+            <a href="{% url 'closet:add' %}" class="btn btn-primary">Add New Item</a>
+
+        </div>
+        <!-- Add a button to go to the Add page -->
+        <div class="my-3">
+            <a href="{% url 'closet:closet_index' %}" class="btn btn-primary">Go To Closet</a>
+        </div>
+
+        <div class="my-3">
+            <a href="{% url 'login:list_patrons' %}" class="btn btn-info">Manage Patrons</a>
+        </div>
+
+    </div>
+
+{% endblock %}

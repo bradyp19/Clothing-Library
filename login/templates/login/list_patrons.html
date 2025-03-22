@@ -1,0 +1,29 @@
+{% extends "login/base.html" %}
+{% block title %}Manage Patrons{% endblock %}
+{% block content %}
+
+    <h2>Manage Patrons</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for patron in patrons %}
+            <tr>
+                <td>{{ patron.user.username }}</td>
+                <td>{{ patron.user.email }}</td>
+                <td>
+                    <a href="{% url 'login:upgrade_patron' patron.id %}" class="btn btn-warning">
+                        Upgrade to Librarian
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}

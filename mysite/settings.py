@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import os
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,11 +27,12 @@ SECRET_KEY = 'django-insecure-70=uj4#qqj)m10191o0*@1)s&-_7x8c@)p4jk-0s6@&p+8y(im
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost','127.0.0.1', 'project-a-07-dd2aa6e8d829.herokuapp.com']
-
+ALLOWED_HOSTS = [
+    'localhost','127.0.0.1', 
+    'project-a-07-dd2aa6e8d829.herokuapp.com', 
+    'clothes-lending-app-34a159199717.herokuapp.com']
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -40,12 +42,44 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'bootstrap5',
 
-    "allauth",
-    "allauth.account",
-    "allauth.socialaccount",
-    "allauth.socialaccount.providers.google",  # Google login support
-    "closet",  # Your main app
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',  # Google login support
+    
+    'django_filters',
+
+    'closet',  # Your main apps
+    'login',
+    'storages',
 ]
+
+AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
+AWS_STORAGE_BUCKET_NAME= "cs3240cla"
+AWS_S3_REGION_NAME = os.environ.get('AWS_S3_REGION_NAME')
+
+AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
+AWS_DEFAULT_ACL = None #changed to None due to error: https://stackoverflow.com/questions/54788998/djangoaws-s3-botocore-exceptions-clienterror-an-error-occurred-accessdenied
+
+AWS_ACCESS_KEY_ID = 'AKIAUSOSP6BBH54OGJ7U'
+AWS_SECRET_ACCESS_KEY = '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'
+AWS_STORAGE_BUCKET_NAME = 'cs3240cla'
+AWS_S3_REGION_NAME = 'us-east-2'
+
+STORAGES = { #since we're on django 4.2 and later
+    "default": {
+        #cite: https://www.reddit.com/r/django/comments/1b9w3rv/which_djangostorages_class_should_i_use/
+        "BACKEND": "storages.backends.s3.S3Storage",
+    },
+
+    "staticfiles": {
+        "BACKEND": "storages.backends.s3.S3Storage",
+    },
+}
+
+MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/'
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -90,6 +124,9 @@ DATABASES = {
     }
 }
 
+# Then a section that checks for 'DATABASE_URL' in the environment:
+if 'DATABASE_URL' in os.environ:
+    DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -117,17 +154,15 @@ AUTHENTICATION_BACKENDS = [
 
 SITE_ID = 1
 
-LOGIN_REDIRECT_URL = "http://127.0.0.1:8000/closet/dashboard/"  # Redirect users after login
+# LOGIN_REDIRECT_URL = "http://127.0.0.1:8000/start/profile-setup/"  # Redirect users after login
 # LOGIN_REDIRECT_URL = "http://127.0.0.1:8000/accounts/3rdparty/"  # Redirect users after login
+LOGIN_REDIRECT_URL = "/start/profile-setup/"
+LOGOUT_REDIRECT_URL = "/"  # Redirect after logout, CAN BE CHANGED TO THE LOGOUT PAGE
 
-LOGOUT_REDIRECT_URL = "/"  # Redirect after logout
-
-# ACCOUNT_AUTHENTICATION_METHOD = "email" Deprecated
-ACCOUNT_LOGIN_METHODS = {"email"}
+# ACCOUNT_AUTHENTICATION_METHOD = "email"
+ACCOUNT_LOGIN_METHODS = {'email'}
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
-
-
 ACCOUNT_EMAIL_VERIFICATION = "none"  # Disable email verification
 SOCIALACCOUNT_AUTO_SIGNUP = True  # Allow auto signup with Google
 
