@@ -62,11 +62,6 @@ AWS_S3_REGION_NAME = os.environ.get('AWS_S3_REGION_NAME')
 AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
 AWS_DEFAULT_ACL = None #changed to None due to error: https://stackoverflow.com/questions/54788998/djangoaws-s3-botocore-exceptions-clienterror-an-error-occurred-accessdenied
 
-AWS_ACCESS_KEY_ID = 'AKIAUSOSP6BBH54OGJ7U'
-AWS_SECRET_ACCESS_KEY = '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'
-AWS_STORAGE_BUCKET_NAME = 'cs3240cla'
-AWS_S3_REGION_NAME = 'us-east-2'
-
 STORAGES = { #since we're on django 4.2 and later
     "default": {
         #cite: https://www.reddit.com/r/django/comments/1b9w3rv/which_djangostorages_class_should_i_use/
