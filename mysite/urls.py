@@ -17,9 +17,13 @@ Including another URLconf
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.urls import include, path
+from django.views.generic.base import RedirectView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+
+    path('', RedirectView.as_view(url='/start/login/', permanent=False), name='home'),
+    # comment the above line to show possible urls. Above line makes the page we go login page
 
     path("start/", include("login.urls")),  # Login, Dashboard, Patron, Librarian
     # path("", include("login.urls")),
