@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'crispy_forms', # django crispy forms package
+    'crispy_bootstrap5',
     'bootstrap5',
 
     'allauth',
@@ -53,6 +55,8 @@ INSTALLED_APPS = [
     'login',
     'storages',
 ]
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5" #django crispy setup
+CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
