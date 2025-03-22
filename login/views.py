@@ -29,7 +29,7 @@ class LoginView(View):
                 profile, created = Profile.objects.get_or_create(user=user, defaults={'setup_complete': False})
                 if created or not profile.is_complete:
                     return redirect("login:profile_setup")
-                return redirect("login:dashboard")
+                return redirect("login:profile_setup")
         return render(request, self.template_name, {"form": form})
 
 def logout_view(request):
@@ -61,6 +61,7 @@ def profile_setup_view(request):
             instance = form.save(commit=False)
             # Force new profiles to be patrons
             instance.role = 'patron'
+            instance.setup_complete = True
             instance.save()
             return redirect('login:patron_dashboard')
     else:
