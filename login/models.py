@@ -13,7 +13,7 @@ class Profile(models.Model):
         ('librarian', 'Librarian'),
     ]
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    role = models.CharField(max_length=10, choices=ROLE_CHOICES, blank=True)
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='patron')
     profile_picture = models.ImageField(
         upload_to=profile_picture_path,
         default='profile_pics/hotel.jpg',  # permanent default
