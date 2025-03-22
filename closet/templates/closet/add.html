@@ -3,14 +3,6 @@
 {% block content %}
 
 <!-- add_item.html -->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Item</title>
-</head>
-<body>
     <h1>Add Item to Closet</h1>
     <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
@@ -20,7 +12,4 @@
             <a href="{% url 'closet:closet_index' %}" class="btn btn-primary">Cancel</a>
         </div>
     </form>
-</body>
-</html>
-
 {% endblock %}
