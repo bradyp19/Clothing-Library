@@ -99,17 +99,19 @@ def patron_profile_edit_view(request):
 @librarian_required
 def librarian_profile_edit_view(request):
     profile = request.user.profile
-    # Ensure only librarians use this view.
     if profile.role != 'librarian':
         return redirect('login:patron_dashboard')
     
     if request.method == 'POST':
         form = LibrarianProfileForm(request.POST, request.FILES, instance=profile)
         if form.is_valid():
-            # Optionally, you can ask for a double-check (confirmation) if a downgrade is attempted.
-            # For now, we simply save the submitted value.
-            form.save()
-            return redirect('login:librarian_dashboard')
+            # Save and get the updated instance
+            instance = form.save()
+            # Check the instance's new role
+            if instance.role == 'patron':
+                return redirect('login:patron_dashboard')
+            else:
+                return redirect('login:librarian_dashboard')
     else:
         form = LibrarianProfileForm(instance=profile)
         
