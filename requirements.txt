@@ -5,11 +5,13 @@ botocore==1.37.13
 certifi==2025.1.31
 cffi==1.17.1
 charset-normalizer==3.4.1
+crispy-bootstrap5==2024.10
 cryptography==43.0.1
 dj-database-url==2.3.0
 Django==4.2.19
 django-allauth==65.4.1
 django-bootstrap-v5==1.0.11
+django-crispy-forms==2.3
 django-filter==25.1
 django-heroku==0.3.1
 django-storages==1.14.5
