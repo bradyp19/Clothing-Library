@@ -25,6 +25,11 @@ class LoginView(View):
             user = authenticate(request, username=username, password=password)
             if user:
                 login(request, user)
+                # Check the user's profile completeness
+                profile, created = Profile.objects.get_or_create(user=user)
+                if not profile.is_complete:
+                    return redirect("login:profile_setup")
+                # If complete, send to dashboard (or whichever page you prefer)
                 return redirect("dashboard")
         return render(request, self.template_name, {"form": form})
 

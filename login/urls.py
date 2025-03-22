@@ -14,10 +14,9 @@ urlpatterns = [
     path("login/", LoginView.as_view(), name="login"),
     path("logout/", logout_view, name="logout"),     
     
-    path('profile-setup/', profile_setup_view, name='profile_setup'),
-
     path("dashboard/", dashboard, name="dashboard"),
 
+    path('profile-setup/', profile_setup_view, name='profile_setup'),
     path('profile/edit/', profile_edit_view, name='profile_edit'),
     path('dashboard/patron/', patron_dashboard_view, name='patron_dashboard'),
     path('dashboard/librarian/', librarian_dashboard_view, name='librarian_dashboard'),
