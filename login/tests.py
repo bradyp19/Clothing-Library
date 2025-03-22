@@ -18,14 +18,14 @@ class LoginTests(TestCase):
         response = self.client.get(reverse('login:login'))
         self.assertEqual(response.status_code, 200)
     
-    # def test_login_form_authentication(self):
-    #     login_url = reverse('login:login')
-    #     response = self.client.post(login_url, {
-    #         'username': 'testuser',
-    #         'password': 'testpass'
-    #     }, follow=True)
-    #     # Check that the user is authenticated
-    #     self.assertTrue(response.wsgi_request.user.is_authenticated)
-    #     # The login view should redirect new users (with incomplete profiles)
-    #     # to the profile setup page.
-    #     self.assertRedirects(response, '/start/profile-setup/')
+    def test_login_form_authentication(self):
+        login_url = reverse('login:login')
+        response = self.client.post(login_url, {
+            'username': 'testuser',
+            'password': 'testpass'
+        }, follow=True)
+        # Check that the user is authenticated
+        self.assertTrue(response.wsgi_request.user.is_authenticated)
+        # The login view should redirect new users (with incomplete profiles)
+        # to the profile setup page.
+        self.assertRedirects(response, '/start/profile-setup/')
