@@ -73,3 +73,60 @@ def item_detail(request, item_id):
     item = item.shoes if hasattr(item, 'shoes') else item
 
     return render(request, 'closet/item_detail.html', {'item': item})
+
+@login_required
+def collections_list(request):
+    # Librarians see all collections; patrons see only their own.
+    if request.user.is_staff:
+        collections = Collection.objects.all()
+    else:
+        collections = Collection.objects.filter(owner=request.user)
+    return render(request, 'closet/collections_list.html', {'collections': collections})
+
+@login_required
+def collection_detail(request, collection_id):
+    collection = get_object_or_404(Collection, id=collection_id)
+    # Only allow access if the user is the owner or is a librarian.
+    if not (request.user == collection.owner or request.user.is_staff):
+        return HttpResponseForbidden("You are not allowed to view this collection.")
+    return render(request, 'closet/collection_detail.html', {'collection': collection})
+
+@login_required
+def add_collection(request):
+    if request.method == 'POST':
+        form = CollectionForm(request.POST)
+        if form.is_valid():
+            collection = form.save(commit=False)
+            collection.owner = request.user
+            collection.save()
+            form.save_m2m()
+            return redirect('collection_detail', collection_id=collection.id)
+    else:
+        form = CollectionForm()
+    return render(request, 'closet/add_collection.html', {'form': form})
+
+@login_required
+def edit_collection(request, collection_id):
+    collection = get_object_or_404(Collection, id=collection_id)
+    # Only allow edit if the user is the owner or a librarian.
+    if not (request.user == collection.owner or request.user.is_staff):
+        return HttpResponseForbidden("You are not allowed to edit this collection.")
+    if request.method == 'POST':
+        form = CollectionForm(request.POST, instance=collection)
+        if form.is_valid():
+            form.save()
+            return redirect('collection_detail', collection_id=collection.id)
+    else:
+        form = CollectionForm(instance=collection)
+    return render(request, 'closet/edit_collection.html', {'form': form, 'collection': collection})
+
+@login_required
+def delete_collection(request, collection_id):
+    collection = get_object_or_404(Collection, id=collection_id)
+    # Only allow delete if the user is the owner or a librarian.
+    if not (request.user == collection.owner or request.user.is_staff):
+        return HttpResponseForbidden("You are not allowed to delete this collection.")
+    if request.method == 'POST':
+        collection.delete()
+        return redirect('collections_list')
+    return render(request, 'closet/delete_collection.html', {'collection': collection})
