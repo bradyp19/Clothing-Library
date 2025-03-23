@@ -1,0 +1,21 @@
+<!-- closet/templates/closet/collection_detail.html -->
+{% extends "base.html" %}
+
+{% block content %}
+  <h2>Collection: {{ collection.name }}</h2>
+  <p>{{ collection.description }}</p>
+  <h3>Items in this Collection:</h3>
+  <ul>
+    {% for item in collection.items.all %}
+      <li>
+        <a href="{% url 'item_detail' item.id %}">{{ item.item_name }}</a>
+      </li>
+    {% empty %}
+      <li>No items in this collection.</li>
+    {% endfor %}
+  </ul>
+  {% if user.is_staff or user == collection.owner %}
+    <a href="{% url 'edit_collection' collection.id %}">Edit Collection</a> | 
+    <a href="{% url 'delete_collection' collection.id %}">Delete Collection</a>
+  {% endif %}
+{% endblock %}
