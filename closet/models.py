@@ -89,3 +89,16 @@ class Images(models.Model):
 
     class Meta:
         ordering = ['order']
+
+# New Collection model
+class Collection(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.TextField(blank=True, null=True)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='collections')
+    # Allow a collection to include many items (and vice versa)
+    items = models.ManyToManyField(Item, related_name='collections', blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
