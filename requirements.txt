@@ -6,3 +6,4 @@ django-bootstrap5==25.1
 django-crispy-forms==2.3
 sqlparse==0.5.3
 typing_extensions==4.13.0
+django-allauth==0.51.0  # Add this line
