@@ -1,5 +1,5 @@
 from django import forms  # Import your custom widget
-from .models import Item, Clothing, Shoes, Images
+from .models import Item, Clothing, Shoes, Images, Collection
 
 class ItemForm(forms.ModelForm):
     ITEM_TYPE_CHOICES = [
@@ -19,5 +19,15 @@ class ImageForm(forms.ModelForm):
     class Meta:
         model = Images
         fields = ["image"]
+    
+
+class CollectionForm(forms.ModelForm):
+    class Meta:
+        model = Collection
+        fields = ['name', 'description', 'items']
+        widgets = {
+            'items': forms.CheckboxSelectMultiple(),
+        }
+
 
 AddImageFormset = forms.inlineformset_factory(Item, Images, extra=3, form=ImageForm, can_delete=False)

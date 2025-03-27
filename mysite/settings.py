@@ -42,8 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'crispy_forms', # django crispy forms package
     'crispy_bootstrap5',
-    'bootstrap5',
-
+    "django_bootstrap5",
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
