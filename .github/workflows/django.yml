@@ -14,6 +14,19 @@ jobs:
       max-parallel: 4
       matrix:
         python-version: [3.9]
+    services:
+      db:
+        image: postgres
+        env:
+          POSTGRES_DB: postgres
+          POSTGRES_USER: admin
+          POSTGRES_PASSWORD: admin
+        ports:
+          - 5432:5432
+
+    env:
+      DATABASE_URL: "postgres://test_user:test_password@localhost:5432/test_db"
+
 
     steps:
     - uses: actions/checkout@v4
