@@ -1,20 +1,20 @@
 <!-- closet/templates/closet/collections_list.html -->
-{% extends "base.html" %}
+{% extends "closet/base.html" %}
 
 {% block content %}
   <h2>Your Collections</h2>
   <ul>
     {% for collection in collections %}
       <li>
-        <a href="{% url 'collection_detail' collection.id %}">{{ collection.name }}</a>
+        <a href="{% url 'closet:collection_detail' collection.id %}">{{ collection.name }}</a>
         {% if user.is_staff or user == collection.owner %}
-          - <a href="{% url 'edit_collection' collection.id %}">Edit</a>
-          - <a href="{% url 'delete_collection' collection.id %}">Delete</a>
+          - <a href="{% url 'closet:edit_collection' collection.id %}">Edit</a>
+          - <a href="{% url 'closet:delete_collection' collection.id %}">Delete</a>
         {% endif %}
       </li>
     {% empty %}
       <li>No collections found.</li>
     {% endfor %}
   </ul>
-  <a href="{% url 'add_collection' %}">Add New Collection</a>
+  <a href="{% url 'closet:add_collection' %}">Add New Collection</a>
 {% endblock %}

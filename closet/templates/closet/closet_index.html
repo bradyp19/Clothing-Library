@@ -1,20 +1,25 @@
 {% extends "closet/base.html" %}
+{% load crispy_forms_tags %}
 {% block title %} Closet View {% endblock %}
 {% block content %}
 
 <div class = "p-2">
     <div class = "container mt-5">
       <h2>Closet</h2>
-      <form method="GET">
-        {{ filter.form.as_p }}
-        <input type="submit" />
-      </form>
+    <div class = "container my-5">
+        <div class = "container col-xxl-3">
+            <form method="GET">
+            {{ filter.form | crispy }}
+            <input type="submit" />
+          </form>
+        </div>
+    </div>
+        
       {% if filter.qs %}
           <ul class = "list-group">
           {% for item in filter.qs %}
                 <li class="list-group-item d-flex align-items-center">
                     <a href="{% url 'closet:item_detail' item.id %}" class="me-3">{{ item.item_name }}</a>
-                    
                     {% with item.images.first as first_image %}
                         {% if first_image %}
                             <img src="{{ first_image.image.url }}" alt="{{ item.item_name }}" class="img-thumbnail" style="max-width: 200px;">

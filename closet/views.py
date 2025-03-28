@@ -1,13 +1,13 @@
 from django.shortcuts import render,redirect, get_object_or_404
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.views import View, generic
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.views.generic.list import ListView
 
-from .forms import ItemForm, AddImageFormset 
+from .forms import ItemForm, AddImageFormset, CollectionForm 
 from .filters import ItemFilter
-from closet.models import Item, Clothing, Shoes, Images
+from closet.models import Item, Clothing, Shoes, Images, Collection
 
 class AddView(generic.CreateView):
     model = Item
@@ -81,7 +81,7 @@ def collections_list(request):
         collections = Collection.objects.all()
     else:
         collections = Collection.objects.filter(owner=request.user)
-    return render(request, 'closet/collections_list.html', {'collections': collections})
+    return render(request, 'closet/collection_list.html', {'collections': collections})
 
 @login_required
 def collection_detail(request, collection_id):
@@ -100,7 +100,7 @@ def add_collection(request):
             collection.owner = request.user
             collection.save()
             form.save_m2m()
-            return redirect('collection_detail', collection_id=collection.id)
+            return redirect('closet/collection_detail', collection_id=collection.id)
     else:
         form = CollectionForm()
     return render(request, 'closet/add_collection.html', {'form': form})

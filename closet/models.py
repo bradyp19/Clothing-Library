@@ -100,5 +100,12 @@ class Collection(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    #PRIVACY_CHOICES = [
+        #("PRIVATE", "Private"),
+        #("PUBLIC", "Public"),
+    #]
+
+    #privacy_setting = models.CharField(max_length=10, choices=PRIVACY_CHOICES, default='PUBLIC')
+
     def __str__(self):
         return self.name
