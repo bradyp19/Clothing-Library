@@ -35,6 +35,8 @@ class Item(models.Model):
         ("W", "Women"),
     ]
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES)
+    in_collection = models.BooleanField(default=False)
+    in_private_collection = models.BooleanField(default=False)
 
 class Clothing(Item):
     SIZE_CHOICES = [
@@ -99,13 +101,14 @@ class Collection(models.Model):
     items = models.ManyToManyField(Item, related_name='collections', blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    access_list = models.ManyToManyField(User, related_name='collections_set', blank=True) #when collection is created, all librarians + owner should be added to access_list
 
-    #PRIVACY_CHOICES = [
-        #("PRIVATE", "Private"),
-        #("PUBLIC", "Public"),
-    #]
+    PRIVACY_CHOICES = [
+        ("PRIVATE", "Private"),
+        ("PUBLIC", "Public"),
+    ]
 
-    #privacy_setting = models.CharField(max_length=10, choices=PRIVACY_CHOICES, default='PUBLIC')
+    privacy_setting = models.CharField(max_length=10, choices=PRIVACY_CHOICES, default='PUBLIC')
 
     def __str__(self):
         return self.name
