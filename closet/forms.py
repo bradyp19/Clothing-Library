@@ -21,11 +21,11 @@ class ImageForm(forms.ModelForm):
         fields = ["image"]
 
 def get_wanted_items_queryset(option):
-    if option == 1:
+    if option == 'all':
         return Item.objects.all()
-    elif option == 2: # get only objects that are not in a collection - use for PRIVATE collections
+    elif option == 'private': # get only objects that are not in a collection - use for PRIVATE collections
         return Item.objects.filter(collections=None)
-    elif option == 3: # get only objects that are not in a private collection - use for PUBLIC collections
+    elif option == 'public': # get only objects that are not in a private collection - use for PUBLIC collections
         wanted_items = set()
         for item in Item.objects.all():
             if not in_private(item):
@@ -42,16 +42,16 @@ class CustomMMCF(forms.ModelMultipleChoiceField):
     def label_from_instance(self, item):
         return '%s' % item.item_name
 
-class CollectionFormPatron(forms.ModelForm):
+class CollectionForm(forms.ModelForm):
     class Meta:
         model = Collection
         fields = ['name', 'description','items'] #no option for privacy setting, so default will be saved
     items = CustomMMCF(
-        queryset=get_wanted_items_queryset(3), # since patrons can only make public collections
+        queryset=get_wanted_items_queryset('public'), # since patrons can only make public collections
         widget=forms.CheckboxSelectMultiple()
     )
 
-class CollectionFormLibrarian(forms.ModelForm):
+class CollectionFormPrivacy(forms.ModelForm):
     class Meta:
         model = Collection
         fields = ['name', 'description', 'privacy_setting', 'items']
