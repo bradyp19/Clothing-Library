@@ -3,6 +3,7 @@ from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.views import View, generic
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
+from django.db.models import Q
 from django.views.generic.list import ListView
 
 from .forms import ItemForm, AddImageFormset, CollectionForm, CollectionFormPrivacy, get_wanted_items_queryset
@@ -54,17 +55,23 @@ class AddView(generic.CreateView):
             return redirect(reverse("closet:closet_index")) # change this to redirect to desired page
         else:
             return self.render_to_response(self.get_context_data(form=form, addimageformset=addimageformset))
-
-class IndexView(generic.ListView):
-    template_name = "closet/closet_index.html"
-    context_object_name = "items_in_closet"
-
-    def get_queryset(self):
-            return Item.objects.all()
-
 def item_list(request):
-    f = ItemFilter(request.GET, queryset=Item.objects.all())
-    return render(request, 'closet/closet_index.html', {'filter': f})
+    search = request.GET.get("q", None)
+    qs = Item.objects.all()
+    if search:
+        qs = qs.filter(
+            Q(item_name__icontains=search) | Q(brand__icontains=search)
+        )
+
+    f = ItemFilter(request.GET, queryset=qs)
+    is_filtered = any(field in request.GET for field in f.get_fields())
+
+    context = {
+        'filter': f,
+        'search_query': search,
+        'is_filtered': is_filtered,
+    }
+    return render(request, 'closet/closet_index.html', context)
 
 #using this instead of using generic DetailView, so in urls.py pk changed to item_id
 def item_detail(request, item_id):
