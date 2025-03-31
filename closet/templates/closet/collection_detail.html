@@ -14,8 +14,9 @@
       <li>No items in this collection.</li>
     {% endfor %}
   </ul>
-  {% if user.is_staff or user == collection.owner %}
-    <a href="{% url 'closet:edit_collection' collection.id %}">Edit Collection</a> | 
-    <a href="{% url 'closet:delete_collection' collection.id %}">Delete Collection</a>
+  {% if user.profile.role == 'librarian' or user == collection.owner %}
+    <a href="{% url 'closet:edit_collection' collection.id %}" class="btn btn-primary">Edit Collection</a>
+    <a href="{% url 'closet:delete_collection' collection.id %}" class="btn btn-danger">Delete Collection</a>
   {% endif %}
+    <a href="{% url 'closet:collections_list' %}" class="btn btn-secondary">Back</a>
 {% endblock %}

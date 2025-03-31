@@ -8,6 +8,7 @@ from django.views.generic.list import ListView
 from .forms import ItemForm, AddImageFormset, CollectionForm 
 from .filters import ItemFilter
 from closet.models import Item, Clothing, Shoes, Images, Collection
+from login.models import Librarian, Patron, Profile
 
 class AddView(generic.CreateView):
     model = Item
@@ -76,18 +77,20 @@ def item_detail(request, item_id):
 
 @login_required
 def collections_list(request):
-    # Librarians see all collections; patrons see only their own.
-    if request.user.is_staff:
-        collections = Collection.objects.all()
-    else:
-        collections = Collection.objects.filter(owner=request.user)
+    # changed so that both librarian and patron can see all collections, handles public/private elsewhere
+    collections = Collection.objects.all()
     return render(request, 'closet/collection_list.html', {'collections': collections})
 
+@login_required
+def my_collections_list(request):
+    # button to go to this view visible to patrons only... atm
+    collections = Collection.objects.filter(owner=request.user)
+    return render(request, 'closet/my_collections.html', {'collections': collections})
 @login_required
 def collection_detail(request, collection_id):
     collection = get_object_or_404(Collection, id=collection_id)
     # Only allow access if the user is the owner or is a librarian.
-    if not (request.user == collection.owner or request.user.is_staff):
+    if not (request.user == collection.owner or is_librarian(request)):
         return HttpResponseForbidden("You are not allowed to view this collection.")
     return render(request, 'closet/collection_detail.html', {'collection': collection})
 
@@ -119,7 +122,7 @@ def add_collection(request):
 def edit_collection(request, collection_id):
     collection = get_object_or_404(Collection, id=collection_id)
     # Only allow edit if the user is the owner or a librarian.
-    if not (request.user == collection.owner or request.user.is_staff):
+    if not (request.user == collection.owner or is_librarian(request)):
         return HttpResponseForbidden("You are not allowed to edit this collection.")
     if request.method == 'POST':
         form = CollectionForm(request.POST, instance=collection)
@@ -134,9 +137,16 @@ def edit_collection(request, collection_id):
 def delete_collection(request, collection_id):
     collection = get_object_or_404(Collection, id=collection_id)
     # Only allow delete if the user is the owner or a librarian.
-    if not (request.user == collection.owner or request.user.is_staff):
+    if not (request.user == collection.owner or is_librarian(request)):
         return HttpResponseForbidden("You are not allowed to delete this collection.")
     if request.method == 'POST':
         collection.delete()
         return redirect('closet:collections_list')
     return render(request, 'closet/delete_collection.html', {'collection': collection})
+
+def is_librarian(request):
+    profile = request.user.profile
+    if profile.role.lower() == 'librarian':
+        return True
+
+#def in_collection_access_list(request, collection):

@@ -6,6 +6,7 @@
   <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit">Edit Collection</button>
+    <button type="submit" class="btn btn-primary">Edit Collection</button>
+      <a href="{% url 'closet:collections_list' %}" class="btn btn-secondary">Cancel</a>
   </form>
 {% endblock %}
