@@ -1,13 +1,15 @@
 from django.shortcuts import render,redirect, get_object_or_404
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.views import View, generic
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
+from django.db.models import Q
 from django.views.generic.list import ListView
 
-from .forms import ItemForm, AddImageFormset 
+from .forms import ItemForm, AddImageFormset, CollectionForm, CollectionFormPrivacy, get_wanted_items_queryset
 from .filters import ItemFilter
-from closet.models import Item, Clothing, Shoes, Images
+from closet.models import Item, Clothing, Shoes, Images, Collection
+from login.models import Librarian, Patron, Profile
 
 class AddView(generic.CreateView):
     model = Item
@@ -53,17 +55,23 @@ class AddView(generic.CreateView):
             return redirect(reverse("closet:closet_index")) # change this to redirect to desired page
         else:
             return self.render_to_response(self.get_context_data(form=form, addimageformset=addimageformset))
-
-class IndexView(generic.ListView):
-    template_name = "closet/closet_index.html"
-    context_object_name = "items_in_closet"
-
-    def get_queryset(self):
-            return Item.objects.all()
-
 def item_list(request):
-    f = ItemFilter(request.GET, queryset=Item.objects.all())
-    return render(request, 'closet/closet_index.html', {'filter': f})
+    search = request.GET.get("q", None)
+    qs = Item.objects.all()
+    if search:
+        qs = qs.filter(
+            Q(item_name__icontains=search) | Q(brand__icontains=search)
+        )
+
+    f = ItemFilter(request.GET, queryset=qs)
+    is_filtered = any(field in request.GET for field in f.get_fields())
+
+    context = {
+        'filter': f,
+        'search_query': search,
+        'is_filtered': is_filtered,
+    }
+    return render(request, 'closet/closet_index.html', context)
 
 #using this instead of using generic DetailView, so in urls.py pk changed to item_id
 def item_detail(request, item_id):
@@ -76,57 +84,97 @@ def item_detail(request, item_id):
 
 @login_required
 def collections_list(request):
-    # Librarians see all collections; patrons see only their own.
-    if request.user.is_staff:
-        collections = Collection.objects.all()
-    else:
-        collections = Collection.objects.filter(owner=request.user)
-    return render(request, 'closet/collections_list.html', {'collections': collections})
+    # changed so that both librarian and patron can see all collections, handles public/private elsewhere
+    collections = Collection.objects.all()
+    return render(request, 'closet/collection_list.html', {'collections': collections})
 
+@login_required
+def my_collections_list(request):
+    # button to go to this view visible to patrons only... atm
+    collections = Collection.objects.filter(owner=request.user)
+    return render(request, 'closet/my_collections.html', {'collections': collections})
 @login_required
 def collection_detail(request, collection_id):
     collection = get_object_or_404(Collection, id=collection_id)
-    # Only allow access if the user is the owner or is a librarian.
-    if not (request.user == collection.owner or request.user.is_staff):
+    # Only allow access if the user is the owner or is a librarian or if collection is public
+    if not (request.user == collection.owner or is_librarian(request) or collection.privacy_setting.lower() == 'public'):
         return HttpResponseForbidden("You are not allowed to view this collection.")
     return render(request, 'closet/collection_detail.html', {'collection': collection})
 
 @login_required
 def add_collection(request):
     if request.method == 'POST':
-        form = CollectionForm(request.POST)
+        if is_librarian(request):
+            form = CollectionFormPrivacy(request.POST)
+        else:
+            form = CollectionForm(request.POST)
+            form.fields['items'].queryset = get_wanted_items_queryset('public')
         if form.is_valid():
             collection = form.save(commit=False)
             collection.owner = request.user
+            # # Force collections created by non-librarians (Patrons) to be public
+            # if not (hasattr(request.user, 'profile') and request.user.profile.role == 'librarian'):
+            #     collection.privacy_setting = 'PUBLIC'
             collection.save()
             form.save_m2m()
-            return redirect('collection_detail', collection_id=collection.id)
+            # # Optionally, populate access_list here (e.g., add owner and all librarians)
+            # collection.access_list.add(request.user)
+            # from django.contrib.auth import get_user_model
+            # User = get_user_model()
+            # librarians = User.objects.filter(profile__role='librarian')
+            # for librarian in librarians:
+            #     collection.access_list.add(librarian)
+            return redirect('closet:collections_list')
+            # additional todos - if select private in librarian collection form, items that are in_collection should not be an option to select. for public, items that are in_private should not be options
     else:
-        form = CollectionForm()
+        if is_librarian(request):
+            form = CollectionFormPrivacy()
+        else:
+            form = CollectionForm()
+            form.fields['items'].queryset = get_wanted_items_queryset('public')
     return render(request, 'closet/add_collection.html', {'form': form})
 
 @login_required
 def edit_collection(request, collection_id):
     collection = get_object_or_404(Collection, id=collection_id)
     # Only allow edit if the user is the owner or a librarian.
-    if not (request.user == collection.owner or request.user.is_staff):
+    if not (request.user == collection.owner or is_librarian(request)):
         return HttpResponseForbidden("You are not allowed to edit this collection.")
     if request.method == 'POST':
         form = CollectionForm(request.POST, instance=collection)
+        if collection.privacy_setting.lower() == 'public': #if public collection
+            form.fields['items'].queryset = get_wanted_items_queryset('public')
+        else: #else if private, want to load items not in collection OR in current collection
+            q1 = get_wanted_items_queryset('private')
+            q2 = collection.items.all()
+            form.fields['items'].queryset = q1 | q2
         if form.is_valid():
             form.save()
-            return redirect('collection_detail', collection_id=collection.id)
+            return redirect('closet:collections_list')
     else:
-        form = CollectionForm(instance=collection)
+        form = CollectionForm(instance=collection) # editing privacy setting after creation not smth we have, decide if that's what we want because it might complicate things
+        if collection.privacy_setting.lower() == 'public': #if public collection
+            form.fields['items'].queryset = get_wanted_items_queryset('public')
+        else: #else if private, want to load items not in collection OR in current collection
+            q1 = get_wanted_items_queryset('private')
+            q2 = collection.items.all()
+            form.fields['items'].queryset = q1 | q2
     return render(request, 'closet/edit_collection.html', {'form': form, 'collection': collection})
 
 @login_required
 def delete_collection(request, collection_id):
     collection = get_object_or_404(Collection, id=collection_id)
     # Only allow delete if the user is the owner or a librarian.
-    if not (request.user == collection.owner or request.user.is_staff):
+    if not (request.user == collection.owner or is_librarian(request)):
         return HttpResponseForbidden("You are not allowed to delete this collection.")
     if request.method == 'POST':
         collection.delete()
-        return redirect('collections_list')
+        return redirect('closet:collections_list')
     return render(request, 'closet/delete_collection.html', {'collection': collection})
+
+def is_librarian(request):
+    profile = request.user.profile
+    if profile.role.lower() == 'librarian':
+        return True
+
+#def in_collection_access_list(request, collection):

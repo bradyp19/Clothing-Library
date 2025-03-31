@@ -19,15 +19,45 @@ class ImageForm(forms.ModelForm):
     class Meta:
         model = Images
         fields = ["image"]
-    
+
+def get_wanted_items_queryset(option):
+    if option == 'all':
+        return Item.objects.all()
+    elif option == 'private': # get only objects that are not in a collection - use for PRIVATE collections
+        return Item.objects.filter(collections=None)
+    elif option == 'public': # get only objects that are not in a private collection - use for PUBLIC collections
+        wanted_items = set()
+        for item in Item.objects.all():
+            if not in_private(item):
+                wanted_items.add(item.id)
+        return Item.objects.filter(id__in=wanted_items)
+
+def in_private(item):
+    count = item.collections.count() # number of collections that an item is part of
+    if count > 1 or count == 0: # if it's in more than 1 collection, none of them should be private. if not in collection, can't be in a private collection
+        return False
+    return item.collections.first().privacy_setting.lower() == 'private' # otherwise, check if that 1 collection is private
+
+class CustomMMCF(forms.ModelMultipleChoiceField):
+    def label_from_instance(self, item):
+        return '%s' % item.item_name
 
 class CollectionForm(forms.ModelForm):
     class Meta:
         model = Collection
-        fields = ['name', 'description', 'items']
-        widgets = {
-            'items': forms.CheckboxSelectMultiple(),
-        }
+        fields = ['name', 'description','items'] #no option for privacy setting, so default will be saved
+    items = CustomMMCF(
+        queryset=get_wanted_items_queryset('public'), # since patrons can only make public collections
+        widget=forms.CheckboxSelectMultiple()
+    )
 
+class CollectionFormPrivacy(forms.ModelForm):
+    class Meta:
+        model = Collection
+        fields = ['name', 'description', 'privacy_setting', 'items']
+    items = CustomMMCF(
+        queryset=Item.objects.all(),
+        widget=forms.CheckboxSelectMultiple()
+    )
 
 AddImageFormset = forms.inlineformset_factory(Item, Images, extra=3, form=ImageForm, can_delete=False)

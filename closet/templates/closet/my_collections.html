@@ -1,8 +1,8 @@
-<!-- closet/templates/closet/collections_list.html -->
+<!-- closet/templates/closet/my_collections.html -->
 {% extends "closet/base.html" %}
 
 {% block content %}
-  <h2>Collections</h2>
+  <h2>My Collections</h2>
   <ul>
     {% for collection in collections %}
       <li>
@@ -17,8 +17,5 @@
     {% endfor %}
   </ul>
   <a href="{% url 'closet:add_collection' %}" class="btn btn-primary">Add New Collection</a>
-    {% if user.profile.role == 'patron' %}
-        <a href="{% url 'closet:my_collections' %}" class="btn btn-primary">My Collections</a>
-    {% endif %}
-    <a href="{% url 'closet:closet_index' %}" class="btn btn-secondary">Back</a>
+    <a href="{% url 'closet:collections_list' %}" class="btn btn-secondary">Back</a>
 {% endblock %}
