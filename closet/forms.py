@@ -21,13 +21,19 @@ class ImageForm(forms.ModelForm):
         fields = ["image"]
     
 
-class CollectionForm(forms.ModelForm):
+class CollectionFormPatron(forms.ModelForm):
     class Meta:
         model = Collection
-        fields = ['name', 'description', 'items']
+        fields = ['name', 'description', 'items'] #no option for privacy setting, so default will be saved
         widgets = {
             'items': forms.CheckboxSelectMultiple(),
         }
 
-
+class CollectionFormLibrarian(forms.ModelForm):
+    class Meta:
+        model = Collection
+        fields = ['name', 'description', 'items', 'privacy_setting']
+        widgets = {
+            'items': forms.CheckboxSelectMultiple(),
+        }
 AddImageFormset = forms.inlineformset_factory(Item, Images, extra=3, form=ImageForm, can_delete=False)

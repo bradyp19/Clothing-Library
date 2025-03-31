@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.views.generic.list import ListView
 
-from .forms import ItemForm, AddImageFormset, CollectionForm 
+from .forms import ItemForm, AddImageFormset, CollectionFormPatron, CollectionFormLibrarian
 from .filters import ItemFilter
 from closet.models import Item, Clothing, Shoes, Images, Collection
 from login.models import Librarian, Patron, Profile
@@ -89,15 +89,18 @@ def my_collections_list(request):
 @login_required
 def collection_detail(request, collection_id):
     collection = get_object_or_404(Collection, id=collection_id)
-    # Only allow access if the user is the owner or is a librarian.
-    if not (request.user == collection.owner or is_librarian(request)):
+    # Only allow access if the user is the owner or is a librarian or if collection is public
+    if not (request.user == collection.owner or is_librarian(request) or collection.privacy_setting.lower() == 'public'):
         return HttpResponseForbidden("You are not allowed to view this collection.")
     return render(request, 'closet/collection_detail.html', {'collection': collection})
 
 @login_required
 def add_collection(request):
     if request.method == 'POST':
-        form = CollectionForm(request.POST)
+        if is_librarian(request):
+            form = CollectionFormLibrarian(request.POST)
+        else:
+            form = CollectionFormPatron(request.POST)
         if form.is_valid():
             collection = form.save(commit=False)
             collection.owner = request.user
@@ -114,8 +117,12 @@ def add_collection(request):
             # for librarian in librarians:
             #     collection.access_list.add(librarian)
             return redirect('closet:collections_list')
+            # additional todos - if select private in librarian collection form, items that are in_collection should not be an option to select. for public, items that are in_private should not be options
     else:
-        form = CollectionForm()
+        if is_librarian(request):
+            form = CollectionFormLibrarian()
+        else:
+            form = CollectionFormPatron()
     return render(request, 'closet/add_collection.html', {'form': form})
 
 @login_required
@@ -125,12 +132,12 @@ def edit_collection(request, collection_id):
     if not (request.user == collection.owner or is_librarian(request)):
         return HttpResponseForbidden("You are not allowed to edit this collection.")
     if request.method == 'POST':
-        form = CollectionForm(request.POST, instance=collection)
+        form = CollectionFormPatron(request.POST, instance=collection) # editing privacy setting after creation not smth we have, decide if that's what we want because it might complicate things
         if form.is_valid():
             form.save()
             return redirect('closet:collections_list')
     else:
-        form = CollectionForm(instance=collection)
+        form = CollectionFormPatron(instance=collection)
     return render(request, 'closet/edit_collection.html', {'form': form, 'collection': collection})
 
 @login_required
