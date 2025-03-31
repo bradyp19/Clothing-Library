@@ -19,21 +19,26 @@ class ImageForm(forms.ModelForm):
     class Meta:
         model = Images
         fields = ["image"]
-    
+
+class CustomMMCF(forms.ModelMultipleChoiceField):
+    def label_from_instance(self, item):
+        return '%s' % item.item_name
 
 class CollectionFormPatron(forms.ModelForm):
     class Meta:
         model = Collection
-        fields = ['name', 'description', 'items'] #no option for privacy setting, so default will be saved
-        widgets = {
-            'items': forms.CheckboxSelectMultiple(),
-        }
+        fields = ['name', 'description',] #no option for privacy setting, so default will be saved
+    items = CustomMMCF(
+        queryset=Item.objects.all(),
+        widget=forms.CheckboxSelectMultiple()
+    )
 
 class CollectionFormLibrarian(forms.ModelForm):
     class Meta:
         model = Collection
-        fields = ['name', 'description', 'items', 'privacy_setting']
-        widgets = {
-            'items': forms.CheckboxSelectMultiple(),
-        }
+        fields = ['name', 'description', 'privacy_setting']
+    items = CustomMMCF(
+        queryset=Item.objects.all(),
+        widget=forms.CheckboxSelectMultiple()
+    )
 AddImageFormset = forms.inlineformset_factory(Item, Images, extra=3, form=ImageForm, can_delete=False)
