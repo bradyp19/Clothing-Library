@@ -98,9 +98,19 @@ def add_collection(request):
         if form.is_valid():
             collection = form.save(commit=False)
             collection.owner = request.user
+            # # Force collections created by non-librarians (Patrons) to be public
+            # if not (hasattr(request.user, 'profile') and request.user.profile.role == 'librarian'):
+            #     collection.privacy_setting = 'PUBLIC'
             collection.save()
             form.save_m2m()
-            return redirect('closet/collection_detail', collection_id=collection.id)
+            # # Optionally, populate access_list here (e.g., add owner and all librarians)
+            # collection.access_list.add(request.user)
+            # from django.contrib.auth import get_user_model
+            # User = get_user_model()
+            # librarians = User.objects.filter(profile__role='librarian')
+            # for librarian in librarians:
+            #     collection.access_list.add(librarian)
+            return redirect('closet:collections_list')
     else:
         form = CollectionForm()
     return render(request, 'closet/add_collection.html', {'form': form})
@@ -115,7 +125,7 @@ def edit_collection(request, collection_id):
         form = CollectionForm(request.POST, instance=collection)
         if form.is_valid():
             form.save()
-            return redirect('collection_detail', collection_id=collection.id)
+            return redirect('closet:collections_list')
     else:
         form = CollectionForm(instance=collection)
     return render(request, 'closet/edit_collection.html', {'form': form, 'collection': collection})
@@ -128,5 +138,5 @@ def delete_collection(request, collection_id):
         return HttpResponseForbidden("You are not allowed to delete this collection.")
     if request.method == 'POST':
         collection.delete()
-        return redirect('collections_list')
+        return redirect('closet:collections_list')
     return render(request, 'closet/delete_collection.html', {'collection': collection})

@@ -1,0 +1,11 @@
+<!-- closet/templates/closet/add_collection.html -->
+{% extends "closet/base.html" %}
+
+{% block content %}
+  <h2>Edit Collection</h2>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Edit Collection</button>
+  </form>
+{% endblock %}
