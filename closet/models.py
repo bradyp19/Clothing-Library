@@ -98,10 +98,10 @@ class Collection(models.Model):
     description = models.TextField(blank=True, null=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='collections')
     # Allow a collection to include many items (and vice versa)
-    items = models.ManyToManyField(Item, related_name='collections', blank=True)
+    items = models.ManyToManyField(Item, related_name='collections', blank=True) #related_name is used in querying so collections instead of collection_set
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    access_list = models.ManyToManyField(User, related_name='collections_set', blank=True) #when collection is created, all librarians + owner should be added to access_list
+    access_list = models.ManyToManyField(User, related_name='access_list', blank=True) #when collection is created, all librarians + owner should be added to access_list
 
     PRIVACY_CHOICES = [
         ("PRIVATE", "Private"),
