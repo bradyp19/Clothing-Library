@@ -14,18 +14,18 @@ jobs:
       max-parallel: 4
       matrix:
         python-version: [3.9]
-    services:
-      db:
-        image: postgres
-        env:
-          POSTGRES_DB: postgres
-          POSTGRES_USER: admin
-          POSTGRES_PASSWORD: admin
-        ports:
-          - 5432:5432
+    # services:
+    #   db:
+    #     image: postgres
+    #     env:
+    #       POSTGRES_DB: 
+    #       POSTGRES_USER: admin
+    #       POSTGRES_PASSWORD: admin
+    #     ports:
+    #       - 5432:5432
 
-    env:
-      DATABASE_URL: "postgres://admin:admin@localhost:5432/postgres"
+    # env:
+    #   DATABASE_URL: "postgres://u5c03u7gpijgp9:p3c299d696103aac845c36388af509b4700591183d7511fee0f81e8f6ce162409@c1i13pt05ja4ag.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com:5432/d4u1lgrb1nbote"
 
 
     steps:
