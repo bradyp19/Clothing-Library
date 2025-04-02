@@ -116,25 +116,20 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 
 
 DATABASES = {
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
-    #     'NAME': 'd4u1lgrb1nbote',
-    #     'USER': 'u5c03u7gpijgp9',
-    #     'PASSWORD': 'p3c299d696103aac845c36388af509b4700591183d7511fee0f81e8f6ce162409',
-    #     'HOST': 'c1i13pt05ja4ag.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com',
-    #     'PORT': 5432,
-    #     },
-    'default': dj_database_url.config(default='postgres://u5c03u7gpijgp9:p3c299d696103aac845c36388af509b4700591183d7511fee0f81e8f6ce162409@c1i13pt05ja4ag.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com:5432/d4u1lgrb1nbote',
-                                      conn_max_age=600, ssl_require=True),
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.sqlite3',
-    #     'NAME': BASE_DIR / 'db.sqlite3',
-    # }
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'postgres',
+        'USER': 'admin',
+        'PASSWORD': 'admin',
+        'HOST': 'localhost',
+        'PORT': 5432,
+    }
 }
 
-# # Then a section that checks for 'DATABASE_URL' in the environment:
-# if 'DATABASE_URL' in os.environ:
-#     DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
+# Then a section that checks for 'DATABASE_URL' in the environment:
+if 'DATABASE_URL' in os.environ:
+    DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=False)
+
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -228,8 +223,3 @@ try:
         django_heroku.settings(locals())
 except ImportError:
     found = False
-
-try:
-    from .localsettings import *
-except ImportError:
-    pass
