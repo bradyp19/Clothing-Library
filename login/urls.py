@@ -1,3 +1,4 @@
+from django.contrib import admin
 from django.urls import path
 from .views import (
     LoginView, logout_view, dashboard, profile_setup_view,
@@ -9,7 +10,8 @@ from .views import (
 app_name = "login"
 urlpatterns = [
     path("login/", LoginView.as_view(), name="login"),
-    path("logout/", logout_view, name="logout"),    
+    path("logout/", logout_view, name="logout"),
+    path("admin/", admin.site.urls, name="admin"),    
 
     path("dashboard/", dashboard, name="dashboard"),
 
