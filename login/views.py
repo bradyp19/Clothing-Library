@@ -36,6 +36,8 @@ def logout_view(request):
     logout(request)
     return redirect("login:login")
 
+def anon_dashboard_view(request):
+    return render(request, 'login/anon_dashboard.html')
 
 @login_required #Old, not need anymore
 def dashboard(request):
