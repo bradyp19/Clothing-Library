@@ -82,11 +82,15 @@ def item_detail(request, item_id):
 
     return render(request, 'closet/item_detail.html', {'item': item})
 
-@login_required
+
 def collections_list(request):
     # changed so that both librarian and patron can see all collections, handles public/private elsewhere
     collections = Collection.objects.all()
     return render(request, 'closet/collection_list.html', {'collections': collections})
+
+def public_collection_list(request):
+    public_collections = Collection.objects.filter(privacy_setting='PUBLIC')
+    return render(request, 'closet/collection_list.html', {'public_collections': public_collections})
 
 @login_required
 def my_collections_list(request):

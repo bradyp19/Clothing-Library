@@ -33,6 +33,10 @@
                     <a href="{% url 'login:profile_setup' %}" class="nav-link">Dashboard</a>
                     <a href="{% url  'closet:closet_index' %}" class="nav-link">View Closet</a>
                 {% endif %}
+                {% else %}
+                    <a class="nav-link" href="{% url 'account_logout' %}">Logout</a>
+                    <a href="{% url 'login:anon_dashboard' %}" class="nav-link">Dashboard</a>
+                    <a href="{% url  'closet:public_collections' %}" class="nav-link">View Public Collections</a>
                 {% endif %}
                 </ul>
             </div>
