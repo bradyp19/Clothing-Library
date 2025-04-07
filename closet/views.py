@@ -90,7 +90,7 @@ def collections_list(request):
 
 def public_collection_list(request):
     public_collections = Collection.objects.filter(privacy_setting='PUBLIC')
-    return render(request, 'closet/collection_list.html', {'public_collections': public_collections})
+    return render(request, 'closet/public_collections.html', {'public_collections': public_collections})
 
 @login_required
 def my_collections_list(request):
