@@ -82,7 +82,7 @@ def item_detail(request, item_id):
 
     return render(request, 'closet/item_detail.html', {'item': item})
 
-
+@login_required
 def collections_list(request):
     # changed so that both librarian and patron can see all collections, handles public/private elsewhere
     collections = Collection.objects.all()
