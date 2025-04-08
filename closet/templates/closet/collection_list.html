@@ -1,24 +1,85 @@
 <!-- closet/templates/closet/collections_list.html -->
 {% extends "closet/base.html" %}
 
+{% block title %}Collections{% endblock %}
+
 {% block content %}
-  <h2>Collections</h2>
-  <ul>
-    {% for collection in collections %}
-      <li>
-        <a href="{% url 'closet:collection_detail' collection.id %}">{{ collection.name }}</a>
-        {% if user.profile.role == 'librarian' or user == collection.owner %}
-          - <a href="{% url 'closet:edit_collection' collection.id %}">Edit</a>
-          - <a href="{% url 'closet:delete_collection' collection.id %}">Delete</a>
-        {% endif %}
-      </li>
-    {% empty %}
-      <li>No collections found.</li>
-    {% endfor %}
-  </ul>
-  <a href="{% url 'closet:add_collection' %}" class="btn btn-primary">Add New Collection</a>
-    {% if user.profile.role == 'patron' %}
-        <a href="{% url 'closet:my_collections' %}" class="btn btn-primary">My Collections</a>
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">
+            <i class="fas fa-folder me-2"></i>Collections
+        </h2>
+        <div>
+            {% if user.profile.role == 'patron' %}
+                <a href="{% url 'closet:my_collections' %}" class="btn btn-outline-primary me-2">
+                    <i class="fas fa-user me-1"></i>My Collections
+                </a>
+            {% endif %}
+            <a href="{% url 'closet:add_collection' %}" class="btn btn-primary">
+                <i class="fas fa-plus me-1"></i>New Collection
+            </a>
+        </div>
+    </div>
+
+    {% if collections %}
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            {% for collection in collections %}
+                <div class="col">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <h5 class="card-title mb-0">
+                                    <i class="fas fa-folder-open text-primary me-2"></i>
+                                    {{ collection.name }}
+                                </h5>
+                                {% if user.profile.role == 'librarian' or user == collection.owner %}
+                                    <div class="dropdown">
+                                        <button class="btn btn-link text-muted p-0" type="button" 
+                                                data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="fas fa-ellipsis-v"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end">
+                                            <li>
+                                                <a class="dropdown-item" href="{% url 'closet:edit_collection' collection.id %}">
+                                                    <i class="fas fa-edit me-2"></i>Edit
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item text-danger" href="{% url 'closet:delete_collection' collection.id %}">
+                                                    <i class="fas fa-trash me-2"></i>Delete
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <p class="card-text text-muted small mb-3">
+                                <i class="fas fa-user me-1"></i>Created by {{ collection.owner.username }}
+                            </p>
+                            <a href="{% url 'closet:collection_detail' collection.id %}" 
+                               class="btn btn-outline-primary btn-sm w-100">
+                                <i class="fas fa-eye me-1"></i>View Collection
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-folder-open fa-3x text-muted mb-3"></i>
+            <h4 class="text-muted">No collections found</h4>
+            <p class="text-muted">Create your first collection to get started</p>
+            <a href="{% url 'closet:add_collection' %}" class="btn btn-primary mt-3">
+                <i class="fas fa-plus me-1"></i>Create Collection
+            </a>
+        </div>
     {% endif %}
-    <a href="{% url 'closet:closet_index' %}" class="btn btn-secondary">Back</a>
+
+    <div class="mt-4 text-center">
+        <a href="{% url 'closet:closet_index' %}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i>Back to Closet
+        </a>
+    </div>
+</div>
 {% endblock %}

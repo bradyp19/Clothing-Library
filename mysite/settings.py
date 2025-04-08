@@ -114,22 +114,13 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'postgres',
-        'USER': 'admin',
-        'PASSWORD': 'admin',
-        'HOST': 'localhost',
-        'PORT': 5432,
-    }
+    'default': dj_database_url.config(
+        default='postgres://u5c03u7gpijgp9:p3c299d696103aac845c36388af509b4700591183d7511fee0f81e8f6ce162409@c1i13pt05ja4ag.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com:5432/d4u1lgrb1nbote',
+        conn_max_age=600,
+        ssl_require=False
+    )
 }
-
-# Then a section that checks for 'DATABASE_URL' in the environment:
-if 'DATABASE_URL' in os.environ:
-    DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=False)
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
