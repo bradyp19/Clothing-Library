@@ -3,27 +3,38 @@
 {% block content %}
 
 <div class="container py-4">
+    <!-- Header Section -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="mb-0">
-            <i class="fas fa-tshirt me-2"></i>{{ item.item_name }}
-        </h2>
-        <a href="{% url 'closet:closet_index' %}" class="btn btn-outline-primary">
-            <i class="fas fa-arrow-left me-1"></i>Back to Closet
-        </a>
+        <div>
+            <h2 class="mb-1">
+                <i class="fas fa-tshirt me-2 text-primary"></i>{{ item.item_name }}
+            </h2>
+            <p class="text-muted mb-0">{{ item.get_category_display }}</p>
+        </div>
+        <div>
+            {% if is_anonymous %}
+                <a href="{% url 'login:login' %}" class="btn btn-outline-primary me-2">
+                    <i class="fas fa-sign-in-alt me-1"></i>Login to Add to Collection
+                </a>
+            {% endif %}
+            <a href="{% url 'closet:closet_index' %}" class="btn btn-outline-primary">
+                <i class="fas fa-arrow-left me-1"></i>Back to Closet
+            </a>
+        </div>
     </div>
 
-    <div class="row">
+    <div class="row g-4">
         <!-- Image Gallery -->
-        <div class="col-md-6 mb-4">
+        <div class="col-md-6">
             {% if item.images.all %}
-                <div class="card shadow-sm">
+                <div class="card shadow-sm border-0">
                     <div class="card-body p-0">
                         <div id="itemCarousel" class="carousel slide" data-bs-ride="carousel">
                             <div class="carousel-inner">
                                 {% for image in item.images.all %}
                                     <div class="carousel-item {% if forloop.first %}active{% endif %}">
                                         <img src="{{ image.image.url }}" alt="Image of {{ item.item_name }}" 
-                                             class="d-block w-100" style="height: 400px; object-fit: cover;">
+                                             class="d-block w-100" style="height: 500px; object-fit: cover;">
                                     </div>
                                 {% endfor %}
                             </div>
@@ -41,8 +52,8 @@
                     </div>
                 </div>
             {% else %}
-                <div class="card shadow-sm">
-                    <div class="card-body d-flex align-items-center justify-content-center" style="height: 400px;">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body d-flex align-items-center justify-content-center" style="height: 500px;">
                         <i class="fas fa-tshirt fa-4x text-muted"></i>
                     </div>
                 </div>
@@ -51,85 +62,130 @@
 
         <!-- Item Details -->
         <div class="col-md-6">
-            <div class="card shadow-sm mb-4">
-                <div class="card-body">
-                    <h5 class="card-title mb-4">Item Details</h5>
-                    <div class="row g-3">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-body p-4">
+                    <h5 class="card-title mb-4">
+                        <i class="fas fa-info-circle me-2 text-primary"></i>Item Details
+                    </h5>
+                    <div class="row g-4">
                         <div class="col-sm-6">
-                            <div class="d-flex align-items-center">
+                            <div class="d-flex align-items-center p-3 bg-light rounded">
                                 <i class="fas fa-tag text-primary me-2"></i>
-                                <span class="text-muted">Brand:</span>
-                                <span class="ms-2">{{item.brand}}</span>
+                                <div>
+                                    <small class="text-muted d-block">Brand</small>
+                                    <span class="fw-medium">{{item.brand}}</span>
+                                </div>
                             </div>
                         </div>
                         <div class="col-sm-6">
-                            <div class="d-flex align-items-center">
+                            <div class="d-flex align-items-center p-3 bg-light rounded">
                                 <i class="fas fa-star text-primary me-2"></i>
-                                <span class="text-muted">Condition:</span>
-                                <span class="ms-2">{{item.get_condition_display}}</span>
+                                <div>
+                                    <small class="text-muted d-block">Condition</small>
+                                    <span class="fw-medium">{{item.get_condition_display}}</span>
+                                </div>
                             </div>
                         </div>
                         <div class="col-sm-6">
-                            <div class="d-flex align-items-center">
+                            <div class="d-flex align-items-center p-3 bg-light rounded">
                                 <i class="fas fa-ruler text-primary me-2"></i>
-                                <span class="text-muted">Fit:</span>
-                                <span class="ms-2">{{item.get_fit_display}}</span>
+                                <div>
+                                    <small class="text-muted d-block">Fit</small>
+                                    <span class="fw-medium">{{item.get_fit_display}}</span>
+                                </div>
                             </div>
                         </div>
                         <div class="col-sm-6">
-                            <div class="d-flex align-items-center">
+                            <div class="d-flex align-items-center p-3 bg-light rounded">
                                 <i class="fas fa-calendar-alt text-primary me-2"></i>
-                                <span class="text-muted">Occasion:</span>
-                                <span class="ms-2">{{item.get_occasion_display}}</span>
+                                <div>
+                                    <small class="text-muted d-block">Occasion</small>
+                                    <span class="fw-medium">{{item.get_occasion_display}}</span>
+                                </div>
                             </div>
                         </div>
                         <div class="col-sm-6">
-                            <div class="d-flex align-items-center">
+                            <div class="d-flex align-items-center p-3 bg-light rounded">
                                 <i class="fas fa-venus-mars text-primary me-2"></i>
-                                <span class="text-muted">Gender:</span>
-                                <span class="ms-2">{{item.get_gender_display}}</span>
+                                <div>
+                                    <small class="text-muted d-block">Gender</small>
+                                    <span class="fw-medium">{{item.get_gender_display}}</span>
+                                </div>
                             </div>
                         </div>
-        {% if item.clothing %}
+                        {% if item.clothing %}
                             <div class="col-sm-6">
-                                <div class="d-flex align-items-center">
+                                <div class="d-flex align-items-center p-3 bg-light rounded">
                                     <i class="fas fa-tshirt text-primary me-2"></i>
-                                    <span class="text-muted">Size:</span>
-                                    <span class="ms-2">{{ item.get_size_display }}</span>
+                                    <div>
+                                        <small class="text-muted d-block">Size</small>
+                                        <span class="fw-medium">{{ item.get_size_display }}</span>
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-sm-6">
-                                <div class="d-flex align-items-center">
+                                <div class="d-flex align-items-center p-3 bg-light rounded">
                                     <i class="fas fa-tshirt text-primary me-2"></i>
-                                    <span class="text-muted">Type:</span>
-                                    <span class="ms-2">{{ item.get_clothing_type_display }}</span>
+                                    <div>
+                                        <small class="text-muted d-block">Type</small>
+                                        <span class="fw-medium">{{ item.get_clothing_type_display }}</span>
+                                    </div>
                                 </div>
                             </div>
-        {% elif item.shoes %}
+                        {% elif item.shoes %}
                             <div class="col-sm-6">
-                                <div class="d-flex align-items-center">
+                                <div class="d-flex align-items-center p-3 bg-light rounded">
                                     <i class="fas fa-shoe-prints text-primary me-2"></i>
-                                    <span class="text-muted">Size:</span>
-                                    <span class="ms-2">{{ item.size }}</span>
+                                    <div>
+                                        <small class="text-muted d-block">Size</small>
+                                        <span class="fw-medium">{{ item.size }}</span>
+                                    </div>
                                 </div>
                             </div>
-        {% endif %}
+                        {% endif %}
                     </div>
                 </div>
             </div>
 
-            {% if user.profile.role == 'librarian' %}
+            {% if is_librarian %}
                 <div class="d-grid gap-2">
-                    <a href="{% url 'closet:edit' item.id %}" class="btn btn-primary">
+                    <a href="{% url 'closet:edit' item.id %}" class="btn btn-primary btn-lg">
                         <i class="fas fa-edit me-1"></i>Edit Item
                     </a>
-                    <a href="{% url 'closet:delete' item.id %}" class="btn btn-outline-danger">
+                    <a href="{% url 'closet:delete' item.id %}" class="btn btn-outline-danger btn-lg">
                         <i class="fas fa-trash me-1"></i>Delete Item
                     </a>
                 </div>
-        {% endif %}
-    </div>
+            {% elif is_anonymous %}
+                <div class="d-grid gap-2">
+                    <a href="{% url 'login:login' %}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-sign-in-alt me-1"></i>Login to Manage Items
+                    </a>
+                </div>
+            {% endif %}
+        </div>
     </div>
 </div>
+
+{% block extra_css %}
+<style>
+    .carousel-control-prev,
+    .carousel-control-next {
+        width: 5%;
+        background: rgba(0,0,0,0.2);
+        border-radius: 50%;
+        height: 40px;
+        width: 40px;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+    .carousel-control-prev {
+        left: 10px;
+    }
+    .carousel-control-next {
+        right: 10px;
+    }
+</style>
+{% endblock %}
 
 {% endblock %}

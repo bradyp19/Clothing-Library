@@ -33,8 +33,10 @@ class LoginView(View):
         return render(request, self.template_name, {"form": form})
 
 def logout_view(request):
-    logout(request)
-    return redirect("login:login")
+    if request.method == 'POST':
+        logout(request)
+        return redirect('closet:closet_index')
+    return render(request, "login/logout.html")
 
 
 @login_required #Old, not need anymore

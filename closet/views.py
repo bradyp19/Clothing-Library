@@ -16,6 +16,11 @@ class AddView(generic.CreateView):
     form_class = ItemForm
     template_name = "closet/add.html"
 
+    def dispatch(self, request, *args, **kwargs):
+        if not (hasattr(request.user, 'profile') and request.user.profile.role == 'librarian'):
+            return HttpResponseForbidden("Only librarians can add items.")
+        return super().dispatch(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if self.request.POST:
@@ -70,6 +75,9 @@ def item_list(request):
         'filter': f,
         'search_query': search,
         'is_filtered': is_filtered,
+        'is_anonymous': not request.user.is_authenticated,
+        'is_librarian': hasattr(request.user, 'profile') and request.user.profile.role == 'librarian' if request.user.is_authenticated else False,
+        'is_patron': hasattr(request.user, 'profile') and request.user.profile.role == 'patron' if request.user.is_authenticated else False,
     }
     return render(request, 'closet/closet_index.html', context)
 
@@ -80,7 +88,13 @@ def item_detail(request, item_id):
     item = item.clothing if hasattr(item, 'clothing') else item
     item = item.shoes if hasattr(item, 'shoes') else item
 
-    return render(request, 'closet/item_detail.html', {'item': item})
+    context = {
+        'item': item,
+        'is_anonymous': not request.user.is_authenticated,
+        'is_librarian': hasattr(request.user, 'profile') and request.user.profile.role == 'librarian' if request.user.is_authenticated else False,
+        'is_patron': hasattr(request.user, 'profile') and request.user.profile.role == 'patron' if request.user.is_authenticated else False,
+    }
+    return render(request, 'closet/item_detail.html', context)
 
 @login_required
 def collections_list(request):

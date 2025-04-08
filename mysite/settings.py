@@ -95,7 +95,11 @@ ROOT_URLCONF = 'mysite.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['templates'],
+        'DIRS': [
+            BASE_DIR / 'templates',
+            BASE_DIR / 'login' / 'templates',
+            BASE_DIR / 'closet' / 'templates',
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -151,7 +155,7 @@ SITE_ID = 1
 # LOGIN_REDIRECT_URL = "http://127.0.0.1:8000/start/profile-setup/"  # Redirect users after login
 # LOGIN_REDIRECT_URL = "http://127.0.0.1:8000/accounts/3rdparty/"  # Redirect users after login
 LOGIN_REDIRECT_URL = "/start/profile-setup/"
-LOGOUT_REDIRECT_URL = "/"  # Redirect after logout, CAN BE CHANGED TO THE LOGOUT PAGE
+LOGOUT_REDIRECT_URL = "/closet/"  # Redirect after logout to the closet index
 
 # ACCOUNT_AUTHENTICATION_METHOD = "email"
 ACCOUNT_LOGIN_METHODS = {'email'}
@@ -159,6 +163,8 @@ ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_EMAIL_VERIFICATION = "none"  # Disable email verification
 SOCIALACCOUNT_AUTO_SIGNUP = True  # Allow auto signup with Google
+ACCOUNT_LOGOUT_ON_GET = False  # Require POST request to logout
+ACCOUNT_LOGOUT_ON_PASSWORD_CHANGE = False  # Don't logout on password change
 
 # ACCOUNT_ADAPTER = "allauth.account.adapter.DefaultAccountAdapter"
 # SOCIALACCOUNT_ADAPTER = "allauth.socialaccount.adapter.DefaultSocialAccountAdapter"
