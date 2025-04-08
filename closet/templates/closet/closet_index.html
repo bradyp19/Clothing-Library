@@ -8,17 +8,29 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h2 class="mb-1">
-                <i class="fas fa-tshirt me-2 text-primary"></i>My Closet
+                <i class="fas fa-tshirt me-2 text-primary"></i>{% if is_anonymous %}Browse Closet{% else %}My Closet{% endif %}
             </h2>
-            <p class="text-muted mb-0">Manage and organize your wardrobe items</p>
+            <p class="text-muted mb-0">
+                {% if is_anonymous %}
+                    Browse our collection of wardrobe items
+                {% elif is_librarian %}
+                    Manage and organize the wardrobe collection
+                {% else %}
+                    Browse and organize your wardrobe items
+                {% endif %}
+            </p>
         </div>
         <div>
             <button class="btn btn-outline-primary me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#filterSidebar">
                 <i class="fas fa-filter me-1"></i>Filters
             </button>
-            {% if user.profile.role == 'librarian' %}
+            {% if is_librarian %}
                 <a href="{% url 'closet:add' %}" class="btn btn-primary">
                     <i class="fas fa-plus me-1"></i>Add Item
+                </a>
+            {% elif is_anonymous %}
+                <a href="{% url 'login:login' %}" class="btn btn-primary">
+                    <i class="fas fa-sign-in-alt me-1"></i>Login to Add Items
                 </a>
             {% endif %}
         </div>
@@ -107,9 +119,13 @@
             </div>
             <h4 class="text-muted mb-2">No items found</h4>
             <p class="text-muted mb-4">Try adjusting your search or filters</p>
-            {% if user.profile.role == 'librarian' %}
+            {% if is_librarian %}
                 <a href="{% url 'closet:add' %}" class="btn btn-primary">
                     <i class="fas fa-plus me-1"></i>Add Your First Item
+                </a>
+            {% elif is_anonymous %}
+                <a href="{% url 'login:login' %}" class="btn btn-primary">
+                    <i class="fas fa-sign-in-alt me-1"></i>Login to Add Items
                 </a>
             {% endif %}
         </div>
@@ -117,9 +133,15 @@
 
     <!-- Collections Link -->
     <div class="mt-5 text-center">
-        <a href="{% url 'closet:collections_list' %}" class="btn btn-outline-primary btn-lg">
-            <i class="fas fa-folder me-1"></i>View Collections
-        </a>
+        {% if is_anonymous %}
+            <a href="{% url 'login:login' %}" class="btn btn-outline-primary btn-lg">
+                <i class="fas fa-sign-in-alt me-1"></i>Login to View Collections
+            </a>
+        {% else %}
+            <a href="{% url 'closet:collections_list' %}" class="btn btn-outline-primary btn-lg">
+                <i class="fas fa-folder me-1"></i>View Collections
+            </a>
+        {% endif %}
     </div>
 </div>
 
