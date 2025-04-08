@@ -47,9 +47,13 @@ class CollectionForm(forms.ModelForm):
         model = Collection
         fields = ['name', 'description','items'] #no option for privacy setting, so default will be saved
     items = CustomMMCF(
-        queryset=get_wanted_items_queryset('public'), # since patrons can only make public collections
+        queryset=Item.objects.none(),  # Set an empty queryset initially
         widget=forms.CheckboxSelectMultiple()
     )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['items'].queryset = get_wanted_items_queryset('public')  # since patrons can only select public setting
 
 class CollectionFormPrivacy(forms.ModelForm):
     class Meta:
