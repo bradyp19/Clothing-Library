@@ -5,49 +5,92 @@
 {% block title %}Closet App Login{% endblock %}
 
 {% block content %}
-<div class="card mx-auto" style="max-width: 400px;">
-  <div class="card-body">
-    <h3 class="card-title text-center mb-4">{% trans "Login" %}</h3>
-    
-    <!-- Display Django messages -->
-    {% if messages %}
-      <div class="alert alert-info">
-        {% for message in messages %}
-          {{ message }}
-        {% endfor %}
-      </div>
-    {% endif %}
-    
-    <!-- Traditional Login Form -->
-    <form method="post" action="{% url 'account_login' %}">
-      {% csrf_token %}
-      <div class="mb-3">
-        <label for="id_login" class="form-label">{% trans "Email or Username" %}</label>
-        <input type="text" class="form-control" id="id_login" name="login" placeholder="{% trans 'Enter email or username' %}">
-      </div>
-      <div class="mb-3">
-        <label for="id_password" class="form-label">{% trans "Password" %}</label>
-        <input type="password" class="form-control" id="id_password" name="password" placeholder="{% trans 'Enter password' %}">
-      </div>
-      <div class="d-grid mb-3">
-        <button type="submit" class="btn btn-primary">{% trans "Login" %}</button>
-      </div>
-    </form>
-    
-    <!-- Google Login Option -->
-    <div class="mb-3 text-center">
-      <a href="{% provider_login_url 'google' %}" class="btn btn-danger">
-        {% trans "Login with Google" %}
-      </a>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4 p-md-5">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-user-circle fa-3x text-primary mb-3"></i>
+                        <h3 class="card-title h4 mb-0">{% trans "Welcome Back" %}</h3>
+                        <p class="text-muted small">{% trans "Please sign in to continue" %}</p>
+                    </div>
+                    
+                    <!-- Display Django messages -->
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    
+                    <!-- Traditional Login Form -->
+                    <form method="post" action="{% url 'account_login' %}" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="id_login" name="login" 
+                                   placeholder="{% trans 'Enter email or username' %}" required>
+                            <label for="id_login">{% trans "Email or Username" %}</label>
+                        </div>
+                        <div class="form-floating mb-4">
+                            <input type="password" class="form-control" id="id_password" name="password" 
+                                   placeholder="{% trans 'Enter password' %}" required>
+                            <label for="id_password">{% trans "Password" %}</label>
+                        </div>
+                        <div class="d-grid mb-4">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-sign-in-alt me-2"></i>{% trans "Sign In" %}
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <!-- Divider -->
+                    <div class="position-relative mb-4">
+                        <hr>
+                        <span class="position-absolute top-50 start-50 translate-middle bg-white px-3 text-muted small">
+                            {% trans "or continue with" %}
+                        </span>
+                    </div>
+                    
+                    <!-- Google Login Option -->
+                    <div class="d-grid mb-4">
+                        <a href="{% provider_login_url 'google' %}" class="btn btn-outline-danger">
+                            <i class="fab fa-google me-2"></i>{% trans "Continue with Google" %}
+                        </a>
+                    </div>
+                    
+                    <div class="text-center">
+                        <p class="mb-2">{% trans "Don't have an account?" %} 
+                            <a href="{% url 'account_signup' %}" class="text-primary text-decoration-none">{% trans "Sign Up" %}</a>
+                        </p>
+                        <a href="{% url 'account_reset_password' %}" class="text-muted small text-decoration-none">
+                            {% trans "Forgot your password?" %}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    
-    <div class="mb-3 text-center">
-        <a href="{% url 'account_signup' %}" class="btn btn-link">{% trans "Sign Up" %}</a>
-    </div>
-    
-    <div class="text-center mt-4">
-      <a href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
-    </div>
-  </div>
 </div>
+
+{% block extra_js %}
+<script>
+// Form validation
+(function () {
+    'use strict'
+    var forms = document.querySelectorAll('.needs-validation')
+    Array.prototype.slice.call(forms).forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+            if (!form.checkValidity()) {
+                event.preventDefault()
+                event.stopPropagation()
+            }
+            form.classList.add('was-validated')
+        }, false)
+    })
+})()
+</script>
+{% endblock %}
 {% endblock %}
