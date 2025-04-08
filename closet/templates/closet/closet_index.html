@@ -16,9 +16,11 @@
             <button class="btn btn-outline-primary me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#filterSidebar">
                 <i class="fas fa-filter me-1"></i>Filters
             </button>
-            <a href="{% url 'closet:add' %}" class="btn btn-primary">
-                <i class="fas fa-plus me-1"></i>Add Item
-            </a>
+            {% if user.profile.role == 'librarian' %}
+                <a href="{% url 'closet:add' %}" class="btn btn-primary">
+                    <i class="fas fa-plus me-1"></i>Add Item
+                </a>
+            {% endif %}
         </div>
     </div>
 
@@ -105,9 +107,11 @@
             </div>
             <h4 class="text-muted mb-2">No items found</h4>
             <p class="text-muted mb-4">Try adjusting your search or filters</p>
-            <a href="{% url 'closet:add' %}" class="btn btn-primary">
-                <i class="fas fa-plus me-1"></i>Add Your First Item
-            </a>
+            {% if user.profile.role == 'librarian' %}
+                <a href="{% url 'closet:add' %}" class="btn btn-primary">
+                    <i class="fas fa-plus me-1"></i>Add Your First Item
+                </a>
+            {% endif %}
         </div>
     {% endif %}
 

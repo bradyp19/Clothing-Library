@@ -16,6 +16,11 @@ class AddView(generic.CreateView):
     form_class = ItemForm
     template_name = "closet/add.html"
 
+    def dispatch(self, request, *args, **kwargs):
+        if not (hasattr(request.user, 'profile') and request.user.profile.role == 'librarian'):
+            return HttpResponseForbidden("Only librarians can add items.")
+        return super().dispatch(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if self.request.POST:
