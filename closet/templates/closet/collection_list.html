@@ -5,10 +5,14 @@
 
 {% block content %}
 <div class="container py-4">
+    <!-- Header Section -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="mb-0">
-            <i class="fas fa-folder me-2"></i>Collections
-        </h2>
+        <div>
+            <h2 class="mb-1">
+                <i class="fas fa-folder me-2 text-primary"></i>Collections
+            </h2>
+            <p class="text-muted mb-0">Organize and share your wardrobe collections</p>
+        </div>
         <div>
             {% if user.profile.role == 'patron' %}
                 <a href="{% url 'closet:my_collections' %}" class="btn btn-outline-primary me-2">
@@ -25,8 +29,8 @@
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
             {% for collection in collections %}
                 <div class="col">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-body">
+                    <div class="card h-100 shadow-sm border-0 hover-shadow">
+                        <div class="card-body p-4">
                             <div class="d-flex justify-content-between align-items-start mb-3">
                                 <h5 class="card-title mb-0">
                                     <i class="fas fa-folder-open text-primary me-2"></i>
@@ -38,10 +42,10 @@
                                                 data-bs-toggle="dropdown" aria-expanded="false">
                                             <i class="fas fa-ellipsis-v"></i>
                                         </button>
-                                        <ul class="dropdown-menu dropdown-menu-end">
+                                        <ul class="dropdown-menu dropdown-menu-end shadow-sm">
                                             <li>
                                                 <a class="dropdown-item" href="{% url 'closet:edit_collection' collection.id %}">
-                                                    <i class="fas fa-edit me-2"></i>Edit
+                                                    <i class="fas fa-edit me-2 text-primary"></i>Edit
                                                 </a>
                                             </li>
                                             <li>
@@ -53,13 +57,21 @@
                                     </div>
                                 {% endif %}
                             </div>
-                            <p class="card-text text-muted small mb-3">
-                                <i class="fas fa-user me-1"></i>Created by {{ collection.owner.username }}
-                            </p>
-                            <a href="{% url 'closet:collection_detail' collection.id %}" 
-                               class="btn btn-outline-primary btn-sm w-100">
-                                <i class="fas fa-eye me-1"></i>View Collection
-                            </a>
+                            <div class="d-flex align-items-center mb-4">
+                                <div class="bg-light rounded-circle p-2 me-2">
+                                    <i class="fas fa-user text-primary"></i>
+                                </div>
+                                <div>
+                                    <small class="text-muted d-block">Created by</small>
+                                    <span class="fw-medium">{{ collection.owner.username }}</span>
+                                </div>
+                            </div>
+                            <div class="d-grid">
+                                <a href="{% url 'closet:collection_detail' collection.id %}" 
+                                   class="btn btn-outline-primary">
+                                    <i class="fas fa-eye me-1"></i>View Collection
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -67,19 +79,47 @@
         </div>
     {% else %}
         <div class="text-center py-5">
-            <i class="fas fa-folder-open fa-3x text-muted mb-3"></i>
-            <h4 class="text-muted">No collections found</h4>
-            <p class="text-muted">Create your first collection to get started</p>
-            <a href="{% url 'closet:add_collection' %}" class="btn btn-primary mt-3">
+            <div class="mb-4">
+                <div class="bg-light rounded-circle p-4 d-inline-block">
+                    <i class="fas fa-folder-open fa-3x text-primary"></i>
+                </div>
+            </div>
+            <h4 class="text-muted mb-2">No collections found</h4>
+            <p class="text-muted mb-4">Create your first collection to get started</p>
+            <a href="{% url 'closet:add_collection' %}" class="btn btn-primary btn-lg">
                 <i class="fas fa-plus me-1"></i>Create Collection
             </a>
         </div>
     {% endif %}
 
-    <div class="mt-4 text-center">
+    <div class="mt-5 text-center">
         <a href="{% url 'closet:closet_index' %}" class="btn btn-outline-secondary">
             <i class="fas fa-arrow-left me-1"></i>Back to Closet
         </a>
     </div>
 </div>
+
+{% block extra_css %}
+<style>
+    .hover-shadow {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .hover-shadow:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0,0,0,0.1) !important;
+    }
+    .dropdown-menu {
+        border: none;
+        border-radius: 12px;
+    }
+    .dropdown-item {
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+    }
+    .dropdown-item:hover {
+        background-color: #f8fafc;
+    }
+</style>
+{% endblock %}
+
 {% endblock %}
