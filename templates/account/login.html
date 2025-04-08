@@ -1,7 +1,6 @@
 {% extends "closet/base.html" %}
 {% load i18n %}
-{% load crispy_forms_tags %}
-{% load socialaccount %}
+{% load account socialaccount %}
 
 {% block title %}{% trans "Sign In" %} | Closet App{% endblock %}
 
@@ -26,9 +25,29 @@
                         {% endfor %}
                     {% endif %}
                     
-                    <form method="POST" class="needs-validation" novalidate>
+                    <form class="login needs-validation" method="POST" action="{% url 'account_login' %}" novalidate>
                         {% csrf_token %}
-                        {{ form|crispy }}
+                        {% if redirect_field_value %}
+                            <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+                        {% endif %}
+                        
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="id_login" name="login" 
+                                   placeholder="{% trans 'Email or Username' %}" required>
+                            <label for="id_login">{% trans "Email or Username" %}</label>
+                        </div>
+                        <div class="form-floating mb-4">
+                            <input type="password" class="form-control" id="id_password" name="password" 
+                                   placeholder="{% trans 'Password' %}" required>
+                            <label for="id_password">{% trans "Password" %}</label>
+                        </div>
+                        
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" name="remember" id="id_remember">
+                            <label class="form-check-label text-muted" for="id_remember">
+                                {% trans "Remember Me" %}
+                            </label>
+                        </div>
                         
                         <div class="d-grid mb-4">
                             <button class="btn btn-primary btn-lg" type="submit">
@@ -37,22 +56,25 @@
                         </div>
                     </form>
                     
-                    <div class="position-relative mb-4">
-                        <hr>
-                        <span class="position-absolute top-50 start-50 translate-middle bg-white px-3 text-muted small">
-                            {% trans "or continue with" %}
-                        </span>
-                    </div>
-                    
-                    <div class="d-grid mb-4">
-                        <a href="{% provider_login_url 'google' %}" class="btn btn-outline-danger">
-                            <i class="fab fa-google me-2"></i>{% trans "Continue with Google" %}
-                        </a>
-                    </div>
+                    {% get_providers as socialaccount_providers %}
+                    {% if socialaccount_providers %}
+                        <div class="position-relative mb-4">
+                            <hr>
+                            <span class="position-absolute top-50 start-50 translate-middle bg-white px-3 text-muted small">
+                                {% trans "or continue with" %}
+                            </span>
+                        </div>
+                        
+                        <div class="d-grid mb-4">
+                            <a href="{% provider_login_url 'google' %}" class="btn btn-outline-danger">
+                                <i class="fab fa-google me-2"></i>{% trans "Continue with Google" %}
+                            </a>
+                        </div>
+                    {% endif %}
                     
                     <div class="text-center">
                         <p class="mb-2">{% trans "Don't have an account?" %} 
-                            <a href="{% url 'account_signup' %}" class="text-primary text-decoration-none">{% trans "Sign Up" %}</a>
+                            <a href="{{ signup_url }}" class="text-primary text-decoration-none">{% trans "Sign Up" %}</a>
                         </p>
                         <a href="{% url 'account_reset_password' %}" class="text-muted small text-decoration-none">
                             {% trans "Forgot your password?" %}
