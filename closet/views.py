@@ -102,18 +102,27 @@ def collections_list(request):
     collections = Collection.objects.all()
     return render(request, 'closet/collection_list.html', {'collections': collections})
 
+def public_collection_list(request):
+    public_collections = Collection.objects.filter(privacy_setting='PUBLIC')
+    return render(request, 'closet/public_collections.html', {'public_collections': public_collections})
+
 @login_required
 def my_collections_list(request):
     # button to go to this view visible to patrons only... atm
     collections = Collection.objects.filter(owner=request.user)
     return render(request, 'closet/my_collections.html', {'collections': collections})
-@login_required
+
 def collection_detail(request, collection_id):
     collection = get_object_or_404(Collection, id=collection_id)
+    # guest access
+    if collection.privacy_setting.lower() == 'public':
+        return render(request, 'closet/collection_detail.html', {'collection': collection})
+    elif request.user.is_authenticated and (request.user == collection.owner or is_librarian(request)):
+        return render(request, 'closet/collection_detail.html', {'collection': collection})
+    else:
     # Only allow access if the user is the owner or is a librarian or if collection is public
-    if not (request.user == collection.owner or is_librarian(request) or collection.privacy_setting.lower() == 'public'):
-        return HttpResponseForbidden("You are not allowed to view this collection.")
-    return render(request, 'closet/collection_detail.html', {'collection': collection})
+        if not (request.user == collection.owner or is_librarian(request) or collection.privacy_setting.lower() == 'public'):
+            return HttpResponseForbidden("You are not allowed to view this collection.")
 
 @login_required
 def add_collection(request):
