@@ -4,7 +4,7 @@ from django.views import View, generic
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.urls import reverse
-from django.db.models import Q
+from django.db.models import Q, Avg
 from django.views.generic.list import ListView
 
 from .forms import ItemForm, AddImageFormset, CollectionForm, CollectionFormPrivacy, BorrowRequestForm, ItemReviewForm, get_wanted_items_queryset
@@ -271,15 +271,14 @@ def update_borrow_request(request, request_id, action):
 @login_required
 def item_detail(request, item_id):
     item = get_object_or_404(Item, pk=item_id)
-    # Check for multi-table inheritance: use the clothing/shoes versions if available.
+    # Ensure we use the appropriate subclass if it exists
     if hasattr(item, 'clothing'):
         item = item.clothing
     elif hasattr(item, 'shoes'):
         item = item.shoes
 
-    # Process review submission if this is a POST request.
+    # Handle review submission
     if request.method == "POST" and 'rating' in request.POST:
-        # Only allow logged in users to submit reviews.
         if not request.user.is_authenticated:
             messages.error(request, "You must be logged in to submit a review.")
             return redirect("login:login")
@@ -296,13 +295,15 @@ def item_detail(request, item_id):
     else:
         review_form = ItemReviewForm()
 
-    # Retrieve existing reviews for this item, most recent first.
+    # Retrieve existing reviews and compute the average rating
     reviews = item.reviews.all().order_by('-created_at')
+    average_rating = reviews.aggregate(avg_rating=Avg('rating'))['avg_rating']
 
     context = {
         'item': item,
-        # Other context items (e.g., is_anonymous, is_librarian, is_patron) already added earlier...
         'review_form': review_form,
         'reviews': reviews,
+        'average_rating': average_rating,
+        # ... include any additional context items here...
     }
     return render(request, 'closet/item_detail.html', context)

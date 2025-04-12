@@ -149,6 +149,17 @@
                 </div>
             </div>
 
+            <!-- Average Rating Section -->
+            <div class="mt-4">
+                <h4>Average Rating:</h4>
+                {% if average_rating %}
+                    <p>{{ average_rating|floatformat:1 }} out of 5</p>
+                {% else %}
+                    <p>No ratings yet.</p>
+                {% endif %}
+            </div>
+
+            <!-- Reviews Section -->
             <div class="mt-5">
                 <h3>Reviews</h3>
                 {% if reviews %}
@@ -168,7 +179,7 @@
                     <p>No reviews yet. Be the first to review this item!</p>
                 {% endif %}
             </div>
-        
+
             <!-- Review Submission Form -->
             {% if user.is_authenticated %}
                 <div class="mt-4">
