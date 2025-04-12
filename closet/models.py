@@ -130,3 +130,15 @@ class BorrowRequest(models.Model):
 
     def __str__(self):
         return f"{self.item.item_name} requested by {self.requester.username} ({self.status})"
+
+
+class ItemReview(models.Model):
+    RATING_CHOICES = [(i, i) for i in range(1, 6)]  # 1-5 stars
+    item = models.ForeignKey(Item, on_delete=models.CASCADE, related_name="reviews")
+    reviewer = models.ForeignKey(User, on_delete=models.CASCADE, related_name="item_reviews")
+    rating = models.PositiveSmallIntegerField(choices=RATING_CHOICES)
+    comment = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return f"{self.item.item_name} - {self.reviewer.username} ({self.rating} stars)"

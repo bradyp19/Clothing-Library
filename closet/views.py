@@ -7,7 +7,7 @@ from django.urls import reverse
 from django.db.models import Q
 from django.views.generic.list import ListView
 
-from .forms import ItemForm, AddImageFormset, CollectionForm, CollectionFormPrivacy, BorrowRequestForm, get_wanted_items_queryset
+from .forms import ItemForm, AddImageFormset, CollectionForm, CollectionFormPrivacy, BorrowRequestForm, ItemReviewForm, get_wanted_items_queryset
 from .filters import ItemFilter
 from closet.models import Item, Clothing, Shoes, Images, Collection, BorrowRequest
 from login.models import Librarian, Patron, Profile
@@ -267,3 +267,42 @@ def update_borrow_request(request, request_id, action):
     borrow_request.save()
     messages.success(request, f"Borrow request has been {borrow_request.status.lower()}.")
     return redirect("closet:review_borrow_requests")
+
+@login_required
+def item_detail(request, item_id):
+    item = get_object_or_404(Item, pk=item_id)
+    # Check for multi-table inheritance: use the clothing/shoes versions if available.
+    if hasattr(item, 'clothing'):
+        item = item.clothing
+    elif hasattr(item, 'shoes'):
+        item = item.shoes
+
+    # Process review submission if this is a POST request.
+    if request.method == "POST" and 'rating' in request.POST:
+        # Only allow logged in users to submit reviews.
+        if not request.user.is_authenticated:
+            messages.error(request, "You must be logged in to submit a review.")
+            return redirect("login:login")
+        review_form = ItemReviewForm(request.POST)
+        if review_form.is_valid():
+            review = review_form.save(commit=False)
+            review.item = item
+            review.reviewer = request.user
+            review.save()
+            messages.success(request, "Your review has been submitted.")
+            return redirect('closet:item_detail', item_id=item.id)
+        else:
+            messages.error(request, "There was an error with your review. Please try again.")
+    else:
+        review_form = ItemReviewForm()
+
+    # Retrieve existing reviews for this item, most recent first.
+    reviews = item.reviews.all().order_by('-created_at')
+
+    context = {
+        'item': item,
+        # Other context items (e.g., is_anonymous, is_librarian, is_patron) already added earlier...
+        'review_form': review_form,
+        'reviews': reviews,
+    }
+    return render(request, 'closet/item_detail.html', context)
