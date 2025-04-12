@@ -238,13 +238,17 @@ def my_borrow_requests(request):
 
 @login_required
 def review_borrow_requests(request):
-    """
-    Lists pending borrow requests for librarians.
-    """
+    # Allow only librarians to access this view.
     if not (hasattr(request.user, 'profile') and request.user.profile.role.lower() == 'librarian'):
         return HttpResponseForbidden("You are not allowed to review borrow requests.")
-    borrow_requests = BorrowRequest.objects.filter(status="PENDING").order_by("request_date")
-    return render(request, 'closet/review_borrow_requests.html', {'borrow_requests': borrow_requests})
+
+    pending_requests = BorrowRequest.objects.filter(status="PENDING").order_by("request_date")
+    history_requests = BorrowRequest.objects.exclude(status="PENDING").order_by("-updated_at")
+
+    return render(request, 'closet/review_borrow_requests.html', {
+        'pending_requests': pending_requests,
+        'history_requests': history_requests,
+    })
 
 @login_required
 def update_borrow_request(request, request_id, action):
