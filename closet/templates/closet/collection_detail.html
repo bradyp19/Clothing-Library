@@ -1,5 +1,6 @@
 <!-- closet/templates/closet/collection_detail.html -->
 {% extends "closet/base.html" %}
+{% load i18n %}
 
 {% block title %}{{ collection.name }}{% endblock %}
 
@@ -96,12 +97,18 @@
         </div>
     </div>
 
-    <!-- Back Button -->
-    <div class="mt-4 text-center">
-        <a href="{% url 'closet:collections_list' %}" class="btn btn-outline-secondary">
-            <i class="fas fa-arrow-left me-1"></i>Back to Collections
+    <!-- Back button based on collection privacy -->
+    {% if user.is_authenticated %}
+        <a href="{% url 'closet:my_collections_list' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-1"></i>{% trans "Back to My Collections" %}
         </a>
-    </div>
+    {% else %}
+        <a href="{% url 'closet:public_collections' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-1"></i>{% trans "Back to Public Collections" %}
+        </a>
+    {% endif %}
+
+
 </div>
 
 {% block extra_css %}
