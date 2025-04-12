@@ -1,14 +1,14 @@
 from django.shortcuts import render,redirect, get_object_or_404
 from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.views import View, generic
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, messages
 from django.urls import reverse
 from django.db.models import Q
 from django.views.generic.list import ListView
 
-from .forms import ItemForm, AddImageFormset, CollectionForm, CollectionFormPrivacy, get_wanted_items_queryset
+from .forms import ItemForm, AddImageFormset, CollectionForm, CollectionFormPrivacy, BorrowRequestForm, get_wanted_items_queryset
 from .filters import ItemFilter
-from closet.models import Item, Clothing, Shoes, Images, Collection
+from closet.models import Item, Clothing, Shoes, Images, Collection, BorrowRequest
 from login.models import Librarian, Patron, Profile
 
 class AddView(generic.CreateView):
@@ -200,4 +200,67 @@ def is_librarian(request):
     if profile.role.lower() == 'librarian':
         return True
 
-#def in_collection_access_list(request, collection):
+@login_required
+def request_borrow_item(request, item_id):
+    """
+    Allows a patron to submit a borrow request from the item detail page.
+    """
+    item = get_object_or_404(Item, pk=item_id)
+    # Optionally check if an existing pending request exists:
+    existing = BorrowRequest.objects.filter(item=item, requester=request.user, status='PENDING').first()
+    if existing:
+        messages.info(request, "You already have a pending borrow request for this item.")
+        return redirect('closet:item_detail', item_id=item.id)
+    
+    if request.method == "POST":
+        form = BorrowRequestForm(request.POST)
+        if form.is_valid():
+            borrow_req = form.save(commit=False)
+            borrow_req.item = item
+            borrow_req.requester = request.user
+            borrow_req.save()
+            messages.success(request, "Your borrow request has been submitted.")
+            return redirect('closet:item_detail', item_id=item.id)
+    else:
+        form = BorrowRequestForm()
+    return render(request, 'closet/request_borrow.html', {'form': form, 'item': item})
+
+@login_required
+def my_borrow_requests(request):
+    """
+    Displays a list of borrow requests the current user has submitted.
+    """
+    borrow_requests = BorrowRequest.objects.filter(requester=request.user).order_by("-request_date")
+    return render(request, 'closet/my_borrow_requests.html', {'borrow_requests': borrow_requests})
+
+@login_required
+def review_borrow_requests(request):
+    """
+    Lists pending borrow requests for librarians.
+    """
+    if not (hasattr(request.user, 'profile') and request.user.profile.role.lower() == 'librarian'):
+        return HttpResponseForbidden("You are not allowed to review borrow requests.")
+    borrow_requests = BorrowRequest.objects.filter(status="PENDING").order_by("request_date")
+    return render(request, 'closet/review_borrow_requests.html', {'borrow_requests': borrow_requests})
+
+@login_required
+def update_borrow_request(request, request_id, action):
+    """
+    Allows a librarian to approve or deny a borrow request.
+    The parameter 'action' should be either 'approve' or 'deny'.
+    """
+    borrow_request = get_object_or_404(BorrowRequest, pk=request_id)
+    if not (hasattr(request.user, 'profile') and request.user.profile.role.lower() == 'librarian'):
+        return HttpResponseForbidden("You are not allowed to update borrow requests.")
+    
+    if action == "approve":
+        borrow_request.status = "APPROVED"
+    elif action == "deny":
+        borrow_request.status = "DENIED"
+    else:
+        messages.error(request, "Invalid action.")
+        return redirect("closet:review_borrow_requests")
+    
+    borrow_request.save()
+    messages.success(request, f"Borrow request has been {borrow_request.status.lower()}.")
+    return redirect("closet:review_borrow_requests")
