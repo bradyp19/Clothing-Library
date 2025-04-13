@@ -16,8 +16,12 @@
     <!-- Added button for viewing public collections -->
     <div class="text-center mt-4">
         <a href="{% url 'closet:public_collections' %}" class="btn btn-primary btn-lg">
-            <i class="fas fa-eye me-2"></i>View Public Collection
+            <i class="fas fa-eye me-2"></i>View Collections
+        </a>
+        <a href="{% url 'closet:closet_index' %}" class="btn btn-primary btn-lg">
+            <i class="fas fa-eye me-2"></i>View Items
         </a>
     </div>
+
     
 {% endblock %}
