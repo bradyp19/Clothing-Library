@@ -173,14 +173,38 @@ def edit_item(request, item_id):
     # Only allow edit if user is librarian
     if not is_librarian(request):
         return HttpResponseForbidden("You are not allowed to edit this item.")
+    item_type = 'CLOTHING' if hasattr(item, 'clothing') else 'SHOES' if hasattr(item, 'shoes') else None
+    clothing_item = getattr(item, 'clothing', None)
+    shoes_item = getattr(item, 'shoes', None)
+
     if request.method == 'POST':
         form = ItemForm(request.POST, instance=item)
-        if form.is_valid():
-            form.save()
+        addimageformset = AddImageFormset(request.POST, request.FILES, instance=item)
+        if form.is_valid() and addimageformset.is_valid():
+            item = form.save()
+            #TODO: small issue is these subclass specific fields are not populated with current data, so might accidentally change them to default minimum value
+            if item_type == 'CLOTHING' and clothing_item:
+                clothing_item.size = request.POST.get('clothing_size')
+                clothing_item.clothing_type = request.POST.get('clothing_type')
+                clothing_item.save()
+            elif item_type == 'SHOES' and shoes_item:
+                shoes_item.size = request.POST.get('shoes_size')
+                shoes_item.save()
+
+            addimageformset.save()
             return redirect('closet:item_detail', item_id=item.id)
     else:
         form = ItemForm(instance=item)
-    return render(request, 'closet/edit_item.html', {'form': form, 'item': item})
+        addimageformset = AddImageFormset(instance=item)
+    context = {
+        'form': form,
+        'addimageformset': addimageformset,
+        'item': item,
+        'item_type': item_type,
+        'clothing_item': clothing_item,
+        'shoes_item': shoes_item,
+    }
+    return render(request, 'closet/edit_item.html', context)
 
 #TODO: if item is the last item in a collection, and it is deleted, collection should also be deleted? requires some advanced logic with db query
 @login_required
