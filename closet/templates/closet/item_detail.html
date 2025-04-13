@@ -60,6 +60,15 @@
                     </div>
                 </div>
             {% endif %}
+
+            <div class="card shadow-sm border-0 mt-3">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">
+                        <i class="fas fa-sticky-note me-2 text-primary"></i>Description
+                    </h5>
+                    <p class="card-text">{{ item.description }}</p>
+                </div>
+            </div>
         </div>
 
         <!-- Item Details -->
@@ -168,11 +177,19 @@
                     </a>
                 </div>
             {% elif is_patron %}
-                <div class="d-grid gap-2">
-                    <a href="{% url 'closet:request_borrow_item' item.id %}" class="btn btn-success btn-lg">
-                        <i class="fas fa-book-reader me-1"></i>Request to Borrow
-                    </a>
-                </div>
+                {% if item.status == 'IN' %}
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'closet:request_borrow_item' item.id %}" class="btn btn-success btn-lg">
+                            <i class="fas fa-book-reader me-1"></i>Request to Borrow
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="d-grid gap-2">
+                        <a class="btn btn-secondary btn-lg">
+                            <i class="fas fa-book-reader me-1"></i>Unavailable to Borrow
+                        </a>
+                    </div>
+                {% endif %}
             {% elif is_anonymous %}
                 <div class="d-grid gap-2">
                     <a href="{% url 'login:login' %}" class="btn btn-primary btn-lg">

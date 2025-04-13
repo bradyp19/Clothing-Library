@@ -55,8 +55,26 @@
                             <div class="card h-100 shadow-sm border-0 hover-shadow">
                                 {% with item.images.first as first_image %}
                                     {% if first_image %}
-                                        <img src="{{ first_image.image.url }}" alt="{{ item.item_name }}" 
-                                             class="card-img-top" style="height: 200px; object-fit: cover;">
+                                        <div class="position-relative">
+                                            <img src="{{ first_image.image.url }}" alt="{{ item.item_name }}"
+                                                     class="card-img-top" style="height: 200px; object-fit: cover;">
+                                            <div class="position-absolute top-0 end-0 p-2">
+                                                <span class="badge bg-primary">
+                                                    <i class="fas fa-tag me-1"></i>{{ item.brand }}
+                                                </span>
+                                            </div>
+                                            <div class="position-absolute top-0 end-1 p-2">
+                                                {% if item.status == 'OUT' %}
+                                                    <span class="badge bg-danger">
+                                                        <i class="fa fa-minus-square me-1"></i> unavailable
+                                                    </span>
+                                                {%  else %}
+                                                    <span class="badge bg-success">
+                                                        <i class="fa fa-check-square me-1"></i> available
+                                                    </span>
+                                                {% endif %}
+                                        </div>
+                                </div>
                                     {% else %}
                                         <div class="card-img-top bg-light d-flex align-items-center justify-content-center" 
                                              style="height: 200px;">

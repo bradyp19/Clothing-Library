@@ -321,6 +321,8 @@ def update_borrow_request(request, request_id, action):
     
     if action == "approve":
         borrow_request.status = "APPROVED"
+        borrow_request.item.status = "OUT"
+        borrow_request.item.save()
     elif action == "deny":
         borrow_request.status = "DENIED"
     else:

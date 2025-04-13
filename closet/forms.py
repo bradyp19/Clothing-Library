@@ -10,7 +10,7 @@ class ItemForm(forms.ModelForm):
     item_type = forms.ChoiceField(choices=ITEM_TYPE_CHOICES, widget=forms.Select(attrs={"id": "item-type"}))
     class Meta:
         model = Item
-        fields = ["item_name", "brand", "condition", "fit", "occasion", "gender",]
+        fields = ["item_name", "brand", "condition", "fit", "occasion", "gender", "description"]
 
     clothing_size = forms.ChoiceField(choices=Clothing.SIZE_CHOICES, required=False, widget=forms.Select(attrs={"id": "clothing-size"}))
     clothing_type = forms.ChoiceField(choices=Clothing.CLOTHING_TYPE_CHOICES, required=False, widget=forms.Select(attrs={"id": "clothing-type"}))

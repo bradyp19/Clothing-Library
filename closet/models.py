@@ -6,6 +6,13 @@ class Item(models.Model):
     item_name = models.CharField(max_length=60)
     brand = models.CharField(max_length=60)
 
+    STATUS_CHOICES = [
+        ('OUT', 'Checked Out'),
+        ('IN', 'Checked In'),
+    ]
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='IN')
+    description = models.TextField(blank=True, null=True)
+
     CONDITION_CHOICES = [
         ("NWT", "New with Tags"),
         ("NWOT", "New without Tags"),
