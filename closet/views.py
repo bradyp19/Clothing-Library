@@ -65,7 +65,14 @@ class AddView(generic.CreateView):
             return self.render_to_response(self.get_context_data(form=form, addimageformset=addimageformset))
 def item_list(request):
     search = request.GET.get("q", None)
-    qs = Item.objects.all()
+
+    if not request.user.is_authenticated:
+        qs = get_wanted_items_queryset('public')
+    elif is_librarian(request):
+        qs = Item.objects.all()
+    else:
+        qs = get_wanted_items_queryset('public')
+
     if search:
         qs = qs.filter(
             Q(item_name__icontains=search) | Q(brand__icontains=search)
