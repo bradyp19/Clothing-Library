@@ -1,0 +1,27 @@
+{% extends "login/base.html" %}
+{% block title %}Anonymous Dashboard{% endblock %}
+{% block content %}
+
+    <div class="text-center">
+        <h2>Guest Dashboard</h2>
+        <p>Welcome, Anonymous. This is your dashboard!</p>
+
+        {% if user.is_authenticated and user.profile.profile_picture %}
+            <img src="{{ user.profile.profile_picture.url }}" alt="Profile Picture" style="max-width: 200px; border-radius: 50%;">
+        {% else %}
+            <p>No profile picture uploaded.</p>
+        {% endif %}
+    </div>
+    
+    <!-- Added button for viewing public collections -->
+    <div class="text-center mt-4">
+        <a href="{% url 'closet:public_collections' %}" class="btn btn-primary btn-lg">
+            <i class="fas fa-eye me-2"></i>View Collections
+        </a>
+        <a href="{% url 'closet:closet_index' %}" class="btn btn-primary btn-lg">
+            <i class="fas fa-eye me-2"></i>View Items
+        </a>
+    </div>
+
+    
+{% endblock %}

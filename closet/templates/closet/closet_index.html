@@ -45,7 +45,7 @@
                         <i class="fas fa-search text-muted"></i>
                     </span>
                     <input type="text" class="form-control border-start-0 ps-0" name="q" 
-                           placeholder="Search by name, brand, or category..." value="{{ search_query|default:'' }}">
+                           placeholder="Search by name or brand..." value="{{ search_query|default:'' }}">
                     <button class="btn btn-primary px-4" type="submit">
                         <i class="fas fa-search me-1"></i>Search
                     </button>
@@ -68,6 +68,9 @@
                 <button type="submit" class="btn btn-primary w-100 mt-3">
                     <i class="fas fa-check me-1"></i>Apply Filters
                 </button>
+                <a href="{% url 'closet:closet_index' %}" class="btn btn-secondary w-100 mt-3">
+                    <i class="fas fa-times me-1"></i>Clear filters
+                </a>
             </form>
         </div>
     </div>
@@ -85,8 +88,19 @@
                                          class="card-img-top" style="height: 250px; object-fit: cover;">
                                     <div class="position-absolute top-0 end-0 p-2">
                                         <span class="badge bg-primary">
-                                            <i class="fas fa-tag me-1"></i>{{ item.category }}
+                                            <i class="fas fa-tag me-1"></i>{{ item.brand }}
                                         </span>
+                                    </div>
+                                    <div class="position-absolute top-0 end-1 p-2">
+                                        {% if item.status == 'OUT' %}
+                                            <span class="badge bg-danger">
+                                                <i class="fa fa-minus-square me-1"></i> unavailable
+                                            </span>
+                                        {%  else %}
+                                            <span class="badge bg-success">
+                                                <i class="fa fa-check-square me-1"></i> available
+                                            </span>
+                                        {% endif %}
                                     </div>
                                 </div>
                             {% else %}
@@ -99,7 +113,7 @@
                         <div class="card-body">
                             <h5 class="card-title mb-2">{{ item.item_name }}</h5>
                             <p class="card-text text-muted small mb-3">
-                                <i class="fas fa-tag me-1"></i>{{ item.category }}
+                                <i class="fas fa-tag me-1"></i>{{ item.brand }}
                             </p>
                             <div class="d-grid">
                                 <a href="{% url 'closet:item_detail' item.id %}" 
@@ -134,8 +148,8 @@
     <!-- Collections Link -->
     <div class="mt-5 text-center">
         {% if is_anonymous %}
-            <a href="{% url 'login:login' %}" class="btn btn-outline-primary btn-lg">
-                <i class="fas fa-sign-in-alt me-1"></i>Login to View Collections
+            <a href="{% url 'closet:public_collections' %}" class="btn btn-outline-primary btn-lg">
+                <i class="fas fa-sign-in-alt me-1"></i>View Collections
             </a>
         {% else %}
             <a href="{% url 'closet:collections_list' %}" class="btn btn-outline-primary btn-lg">

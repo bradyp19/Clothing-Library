@@ -50,6 +50,13 @@
                         </a>
                     </div>
                     
+                    <!-- Added button for anonymous (guest) user access -->
+                    <div class="d-grid mb-4">
+                        <a href="{% url 'login:anon_dashboard' %}" class="btn btn-secondary btn-lg">
+                            <i class="fas fa-user me-2"></i>{% trans "Continue as Guest" %}
+                        </a>
+                    </div>
+
                     <div class="text-center">
                         <p class="mb-2">{% trans "Don't have an account?" %} 
                             <a href="{% url 'account_signup' %}" class="text-primary text-decoration-none">{% trans "Sign Up" %}</a>

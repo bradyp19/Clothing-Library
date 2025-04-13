@@ -38,6 +38,8 @@ def logout_view(request):
         return redirect('closet:closet_index')
     return render(request, "login/logout.html")
 
+def anon_dashboard_view(request):
+    return render(request, 'login/anon_dashboard.html')
 
 @login_required #Old, not need anymore
 def dashboard(request):

@@ -1,5 +1,6 @@
 from django import forms  # Import your custom widget
-from .models import Item, Clothing, Shoes, Images, Collection
+from .models import Item, Clothing, Shoes, Images, Collection, BorrowRequest, ItemReview, AccessRequest
+
 
 class ItemForm(forms.ModelForm):
     ITEM_TYPE_CHOICES = [
@@ -9,7 +10,7 @@ class ItemForm(forms.ModelForm):
     item_type = forms.ChoiceField(choices=ITEM_TYPE_CHOICES, widget=forms.Select(attrs={"id": "item-type"}))
     class Meta:
         model = Item
-        fields = ["item_name", "brand", "condition", "fit", "occasion", "gender",]
+        fields = ["item_name", "brand", "condition", "fit", "occasion", "gender", "description"]
 
     clothing_size = forms.ChoiceField(choices=Clothing.SIZE_CHOICES, required=False, widget=forms.Select(attrs={"id": "clothing-size"}))
     clothing_type = forms.ChoiceField(choices=Clothing.CLOTHING_TYPE_CHOICES, required=False, widget=forms.Select(attrs={"id": "clothing-type"}))
@@ -65,3 +66,27 @@ class CollectionFormPrivacy(forms.ModelForm):
     )
 
 AddImageFormset = forms.inlineformset_factory(Item, Images, extra=3, form=ImageForm, can_delete=False)
+
+class BorrowRequestForm(forms.ModelForm):
+    class Meta:
+        model = BorrowRequest
+        fields = ['comment']  # Let users optionally add a comment with their request
+        widgets = {
+            'comment': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Optional: Add a note...'}),
+        }
+
+class ItemReviewForm(forms.ModelForm):
+    class Meta:
+        model = ItemReview
+        fields = ['rating', 'comment']
+        widgets = {
+            'comment': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Write your review here...'}),
+        }
+
+class AccessRequestForm(forms.ModelForm):
+    class Meta:
+        model = AccessRequest
+        fields = ['comment']
+        widgets = {
+            'comment': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Optional: Add a note...'}),
+        }

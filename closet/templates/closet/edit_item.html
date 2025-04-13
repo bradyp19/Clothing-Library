@@ -1,0 +1,102 @@
+{% extends "closet/base.html" %}
+{% load crispy_forms_tags %}
+{% block title %}Edit Item{% endblock %}
+{% block content %}
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+                    <div class="text-center mb-4">
+                        <div class="bg-light rounded-circle p-3 d-inline-block mb-3">
+                            <i class="fas fa-plus fa-2x text-primary"></i>
+                        </div>
+                        <h2 class="h4 mb-1">Edit Item</h2>
+                        <p class="text-muted mb-0">Update item details below</p>
+                    </div>
+
+                    <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+                        {% csrf_token %}
+
+                        <!-- Main Item Details -->
+                        <div class="card shadow-sm border-0 mb-4">
+                            <div class="card-body">
+                                <h5 class="card-title mb-3">
+                                    <i class="fas fa-info-circle me-2 text-primary"></i>Item Details
+                                </h5>
+                                {{ form | crispy }}
+                            </div>
+                        </div>
+
+                        <!-- Images Section -->
+                        <div class="card shadow-sm border-0 mb-4">
+                            <div class="card-body">
+                                <h5 class="card-title mb-3">
+                                    <i class="fas fa-images me-2 text-primary"></i>Item Images
+                                </h5>
+                                {{ addimageformset.management_form }}
+                                {% for form in addimageformset %}
+                                    <div class="mb-3">
+                                        {{ form | crispy }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-save me-1"></i>Save Changes
+                            </button>
+                            <a href="{% url 'closet:item_detail' item.id %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-1"></i>Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_css %}
+<style>
+    .form-control, .form-select {
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+    }
+    .form-control:focus, .form-select:focus {
+        border-color: #2563eb;
+        box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.15);
+    }
+    .form-label {
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
+    .card {
+        border-radius: 12px;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Form validation
+(function () {
+    'use strict'
+    var forms = document.querySelectorAll('.needs-validation')
+    Array.prototype.slice.call(forms).forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+            if (!form.checkValidity()) {
+                event.preventDefault()
+                event.stopPropagation()
+            }
+            form.classList.add('was-validated')
+        }, false)
+    })
+})()
+</script>
+{% endblock %}
+
+{% endblock %}
