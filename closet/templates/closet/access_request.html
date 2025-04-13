@@ -1,0 +1,21 @@
+{% extends "closet/base.html" %}
+{% load crispy_forms_tags %}
+{% load i18n %}
+
+{% block title %}Request Access to Collection{% endblock %}
+
+{% block content %}
+
+    <div class="container py-4">
+        <h2>Request to Access: {{ collection.name }}</h2>
+        <p>Please add a note if needed and submit your request.</p>
+        <form method="post">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <button type="submit" class="btn btn-primary mt-3">
+                <i class="fas fa-paper-plane me-1"></i>{% trans "Submit Request" %}
+            </button>
+        </form>
+    </div>
+
+{% endblock %}

@@ -1,5 +1,6 @@
 from django import forms  # Import your custom widget
-from .models import Item, Clothing, Shoes, Images, Collection, BorrowRequest, ItemReview
+from .models import Item, Clothing, Shoes, Images, Collection, BorrowRequest, ItemReview, AccessRequest
+
 
 class ItemForm(forms.ModelForm):
     ITEM_TYPE_CHOICES = [
@@ -80,4 +81,12 @@ class ItemReviewForm(forms.ModelForm):
         fields = ['rating', 'comment']
         widgets = {
             'comment': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Write your review here...'}),
+        }
+
+class AccessRequestForm(forms.ModelForm):
+    class Meta:
+        model = AccessRequest
+        fields = ['comment']
+        widgets = {
+            'comment': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Optional: Add a note...'}),
         }

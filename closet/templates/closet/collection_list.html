@@ -1,6 +1,6 @@
 <!-- closet/templates/closet/collections_list.html -->
 {% extends "closet/base.html" %}
-
+{% load collection_tags %}
 {% block title %}Collections{% endblock %}
 
 {% block content %}
@@ -67,10 +67,17 @@
                                 </div>
                             </div>
                             <div class="d-grid">
-                                <a href="{% url 'closet:collection_detail' collection.id %}" 
-                                   class="btn btn-outline-primary">
-                                    <i class="fas fa-eye me-1"></i>View Collection
-                                </a>
+                                {% if user.profile.role == 'librarian' or user == collection.owner or collection|has_access:user %}
+                                    <a href="{% url 'closet:collection_detail' collection.id %}"
+                                       class="btn btn-outline-primary">
+                                        <i class="fas fa-eye me-1"></i>View Collection
+                                    </a>
+                                {% else %}
+                                    <a href="{% url 'closet:request_access_collection' collection.id %}"
+                                       class="btn btn-outline-primary">
+                                        <i class="fas fa-eye me-1"></i>Request Access
+                                    </a>
+                                {% endif %}
                             </div>
                         </div>
                     </div>

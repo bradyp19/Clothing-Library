@@ -19,6 +19,10 @@ urlpatterns = [
     path("edit_collection/<int:collection_id>/", views.edit_collection, name = "edit_collection"),
     path("delete_collection/<int:collection_id>/", views.delete_collection, name = "delete_collection"),
 
+    path("collections/<int:collection_id>/access/", views.request_access_collection, name = "request_access_collection"),
+    path("access_requests/", views.review_access_requests, name = "review_access_requests"),
+    path("access_requests/<int:request_id>/<str:action>/", views.update_access_request, name = "update_access_request"),
+
     path("item/<int:item_id>/borrow/", views.request_borrow_item, name="request_borrow_item"),
     path("my_borrow_requests/", views.my_borrow_requests, name="my_borrow_requests"),
     path("review_borrow_requests/", views.review_borrow_requests, name="review_borrow_requests"),

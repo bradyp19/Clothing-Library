@@ -7,9 +7,10 @@ from django.urls import reverse
 from django.db.models import Q, Avg
 from django.views.generic.list import ListView
 
-from .forms import ItemForm, AddImageFormset, CollectionForm, CollectionFormPrivacy, BorrowRequestForm, ItemReviewForm, get_wanted_items_queryset
+from .forms import ItemForm, AddImageFormset, CollectionForm, CollectionFormPrivacy, BorrowRequestForm, ItemReviewForm, \
+    get_wanted_items_queryset, AccessRequestForm
 from .filters import ItemFilter
-from closet.models import Item, Clothing, Shoes, Images, Collection, BorrowRequest
+from closet.models import Item, Clothing, Shoes, Images, Collection, BorrowRequest, AccessRequest
 from login.models import Librarian, Patron, Profile
 
 
@@ -127,11 +128,11 @@ def collection_detail(request, collection_id):
     # guest access
     if collection.privacy_setting.lower() == 'public':
         return render(request, 'closet/collection_detail.html', {'collection': collection})
-    elif request.user.is_authenticated and (request.user == collection.owner or is_librarian(request)):
+    elif request.user.is_authenticated and (request.user == collection.owner or has_access(request, collection_id) or is_librarian(request)):
         return render(request, 'closet/collection_detail.html', {'collection': collection})
     else:
     # Only allow access if the user is the owner or is a librarian or if collection is public
-        if not (request.user == collection.owner or is_librarian(request) or collection.privacy_setting.lower() == 'public'):
+        if not (request.user == collection.owner or has_access(request, collection_id) or is_librarian(request) or collection.privacy_setting.lower() == 'public'):
             return HttpResponseForbidden("You are not allowed to view this collection.")
 
 @login_required
@@ -370,3 +371,65 @@ def item_detail(request, item_id):
         'is_patron': hasattr(request.user, 'profile') and request.user.profile.role == 'patron' if request.user.is_authenticated else False,
     }
     return render(request, 'closet/item_detail.html', context)
+
+@login_required
+def request_access_collection(request, collection_id):
+    """
+    Allows patrons to request access to private collections.
+    Once they have access (theyre on access list), should be able to click on collection.
+    """
+    collection = get_object_or_404(Collection, id=collection_id)
+    existing = AccessRequest.objects.filter(collection=collection, requester=request.user, status='PENDING').first()
+    if existing or collection.access_list.filter(pk=request.user.pk).exists():
+        messages.error(request, "You have already requested access to this collection.")
+        return redirect('closet:collections_list')
+
+    if request.method == "POST":
+        form = AccessRequestForm(request.POST)
+        if form.is_valid():
+            access_req = form.save(commit=False)
+            access_req.collection = collection
+            access_req.requester = request.user
+            access_req.save()
+            messages.success(request, "Your access request has been submitted.")
+            return redirect('closet:collections_list')
+    else:
+        form = AccessRequestForm()
+    return render(request, 'closet/access_request.html', {'form': form, 'collection': collection})
+
+@login_required
+def review_access_requests(request):
+    # Only for librarians
+    if not (hasattr(request.user, 'profile') and is_librarian(request)):
+        return HttpResponseForbidden("You are not allowed to review borrow requests.")
+
+    pending_requests = AccessRequest.objects.filter(status='PENDING').order_by('request_date')
+
+    return render(request, 'closet/review_access_requests.html', {'pending_requests': pending_requests})
+
+@login_required
+def update_access_request(request, request_id, action):
+    """
+    Allows a librarian to approve or deny access request, at which point user will be added to access list.
+    """
+    access_request = get_object_or_404(AccessRequest, pk=request_id)
+    if not (hasattr(request.user, 'profile') and is_librarian(request)):
+        return HttpResponseForbidden("You are not allowed to update borrow requests.")
+
+    if action == "approve":
+        access_request.status = "APPROVED"
+        collection = access_request.collection
+        collection.access_list.add(access_request.requester)
+    elif action == "deny":
+        access_request.status = "DENIED"
+    else:
+        messages.error(request, "Invalid action.")
+        return redirect('closet:review_access_requests')
+
+    access_request.save()
+    messages.success(request, f"Access request has been {access_request.status.lower()}.")
+    return redirect('closet:review_access_requests')
+
+def has_access(request, collection_id):
+    collection = get_object_or_404(Collection, id=collection_id)
+    return collection.access_list.filter(pk=request.user.pk).exists()
