@@ -168,6 +168,33 @@ def add_collection(request):
     return render(request, 'closet/add_collection.html', {'form': form})
 
 @login_required
+def edit_item(request, item_id):
+    item = get_object_or_404(Item, pk=item_id)
+    # Only allow edit if user is librarian
+    if not is_librarian(request):
+        return HttpResponseForbidden("You are not allowed to edit this item.")
+    if request.method == 'POST':
+        form = ItemForm(request.POST, instance=item)
+        if form.is_valid():
+            form.save()
+            return redirect('closet:item_detail', item_id=item.id)
+    else:
+        form = ItemForm(instance=item)
+    return render(request, 'closet/edit_item.html', {'form': form, 'item': item})
+
+#TODO: if item is the last item in a collection, and it is deleted, collection should also be deleted? requires some advanced logic with db query
+@login_required
+def delete_item(request, item_id):
+    item = get_object_or_404(Item, pk=item_id)
+    # Only allow delete if user is librarian
+    if not is_librarian(request):
+        return HttpResponseForbidden("You are not allowed to delete this item.")
+    if request.method == 'POST':
+        item.delete()
+        return redirect('closet:closet_index')
+    return render(request, 'closet/delete_item.html', {'item': item})
+
+@login_required
 def edit_collection(request, collection_id):
     collection = get_object_or_404(Collection, id=collection_id)
     # Only allow edit if the user is the owner or a librarian.
@@ -183,7 +210,7 @@ def edit_collection(request, collection_id):
             form.fields['items'].queryset = q1 | q2
         if form.is_valid():
             form.save()
-            return redirect('closet:collections_list')
+            return redirect('closet:collection_detail', collection_id=collection.id)
     else:
         form = CollectionForm(instance=collection) # editing privacy setting after creation not smth we have, decide if that's what we want because it might complicate things
         if collection.privacy_setting.lower() == 'public': #if public collection
