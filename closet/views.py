@@ -9,7 +9,7 @@ from django.views.generic.list import ListView
 
 from .forms import ItemForm, AddImageFormset, CollectionForm, CollectionFormPrivacy, BorrowRequestForm, ItemReviewForm, \
     get_wanted_items_queryset, AccessRequestForm
-from .filters import ItemFilter
+from .filters import ItemFilter, CollectionFilter
 from closet.models import Item, Clothing, Shoes, Images, Collection, BorrowRequest, AccessRequest
 from login.models import Librarian, Patron, Profile
 
@@ -110,12 +110,46 @@ def item_list(request):
 @login_required
 def collections_list(request):
     # changed so that both librarian and patron can see all collections, handles public/private elsewhere
-    collections = Collection.objects.all()
-    return render(request, 'closet/collection_list.html', {'collections': collections})
+    search = request.GET.get("q", None)
+    if not request.user.is_authenticated:
+        qs = Collection.objects.filter(privacy_setting='PUBLIC')
+    else:
+        qs = Collection.objects.all()
+
+    if search:
+        qs = qs.filter(
+            Q(name__icontains=search)
+        )
+
+    f = CollectionFilter(request.GET, queryset=qs)
+    is_filtered = any(field in request.GET for field in f.get_fields())
+
+    context = {
+        'filter': f,
+        'search_query': search,
+        'is_filtered': is_filtered,
+        # add other fields?
+    }
+    return render(request, 'closet/collection_list.html', context)
 
 def public_collection_list(request):
-    public_collections = Collection.objects.filter(privacy_setting='PUBLIC')
-    return render(request, 'closet/public_collections.html', {'public_collections': public_collections})
+    search = request.GET.get("q", None)
+    qs = Collection.objects.filter(privacy_setting='PUBLIC')
+    if search:
+        qs = qs.filter(
+            Q(name__icontains=search)
+        )
+
+    f = CollectionFilter(request.GET, queryset=qs)
+    is_filtered = any(field in request.GET for field in f.get_fields())
+
+    context = {
+        'filter': f,
+        'search_query': search,
+        'is_filtered': is_filtered,
+        # add other fields?
+    }
+    return render(request, 'closet/public_collections.html', context)
 
 @login_required
 def my_collections_list(request):
@@ -125,11 +159,22 @@ def my_collections_list(request):
 
 def collection_detail(request, collection_id):
     collection = get_object_or_404(Collection, id=collection_id)
+    search = request.GET.get("q", None)
+    qs = collection.items.all()
+    if search:
+        qs = qs.filter(
+            Q(item_name__icontains=search) | Q(brand__icontains=search)
+        )
+    context = {
+        'collection': collection,
+        'search_query': search,
+        'qs': qs,
+    }
     # guest access
     if collection.privacy_setting.lower() == 'public':
-        return render(request, 'closet/collection_detail.html', {'collection': collection})
+        return render(request, 'closet/collection_detail.html', context)
     elif request.user.is_authenticated and (request.user == collection.owner or has_access(request, collection_id) or is_librarian(request)):
-        return render(request, 'closet/collection_detail.html', {'collection': collection})
+        return render(request, 'closet/collection_detail.html', context)
     else:
     # Only allow access if the user is the owner or is a librarian or if collection is public
         if not (request.user == collection.owner or has_access(request, collection_id) or is_librarian(request) or collection.privacy_setting.lower() == 'public'):
