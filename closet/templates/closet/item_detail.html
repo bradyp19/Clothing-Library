@@ -149,6 +149,38 @@
                 </div>
             </div>
 
+            {% comment %}
+              Display action buttons based on the type of user:
+              - Librarians: Edit/Delete (existing functionality)
+              - Patrons: Request to Borrow (new feature)
+              - Anonymous: Login button
+                <!-- NEED UPDATE, NOW EDIT AND DELETE ARE NOT IMPLEMENTED!!! -->
+                <!-- NEED UPDATE, NOW EDIT AND DELETE ARE NOT IMPLEMENTED!!! -->
+                <!-- NEED UPDATE, NOW EDIT AND DELETE ARE NOT IMPLEMENTED!!! -->
+            {% endcomment %}
+            {% if is_librarian %}
+                <div class="d-grid gap-2">
+                    <a href="{% url 'closet:edit_collection' item.id %}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-edit me-1"></i>Edit Item
+                    </a>
+                    <a href="{% url 'closet:delete_collection' item.id %}" class="btn btn-outline-danger btn-lg">
+                        <i class="fas fa-trash me-1"></i>Delete Item
+                    </a>
+                </div>
+            {% elif is_patron %}
+                <div class="d-grid gap-2">
+                    <a href="{% url 'closet:request_borrow_item' item.id %}" class="btn btn-success btn-lg">
+                        <i class="fas fa-book-reader me-1"></i>Request to Borrow
+                    </a>
+                </div>
+            {% elif is_anonymous %}
+                <div class="d-grid gap-2">
+                    <a href="{% url 'login:login' %}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-sign-in-alt me-1"></i>Login to Manage Items
+                    </a>
+                </div>
+            {% endif %}
+
             <!-- Average Rating Section -->
             <div class="mt-4">
                 <h4>Average Rating:</h4>
@@ -196,38 +228,6 @@
                 <p><a href="{% url 'login:login' %}">Login</a> to leave a review.</p>
             {% endif %}
 
-
-            {% comment %}
-              Display action buttons based on the type of user:
-              - Librarians: Edit/Delete (existing functionality)
-              - Patrons: Request to Borrow (new feature)
-              - Anonymous: Login button
-                <!-- NEED UPDATE, NOW EDIT AND DELETE ARE NOT IMPLEMENTED!!! -->
-                <!-- NEED UPDATE, NOW EDIT AND DELETE ARE NOT IMPLEMENTED!!! -->
-                <!-- NEED UPDATE, NOW EDIT AND DELETE ARE NOT IMPLEMENTED!!! -->
-            {% endcomment %}
-            {% if is_librarian %}
-                <div class="d-grid gap-2">
-                    <a href="{% url 'closet:edit_collection' item.id %}" class="btn btn-primary btn-lg">
-                        <i class="fas fa-edit me-1"></i>Edit Item
-                    </a>
-                    <a href="{% url 'closet:delete_collection' item.id %}" class="btn btn-outline-danger btn-lg">
-                        <i class="fas fa-trash me-1"></i>Delete Item
-                    </a>
-                </div>
-            {% elif is_patron %}
-                <div class="d-grid gap-2">
-                    <a href="{% url 'closet:request_borrow_item' item.id %}" class="btn btn-success btn-lg">
-                        <i class="fas fa-book-reader me-1"></i>Request to Borrow
-                    </a>
-                </div>
-            {% elif is_anonymous %}
-                <div class="d-grid gap-2">
-                    <a href="{% url 'login:login' %}" class="btn btn-primary btn-lg">
-                        <i class="fas fa-sign-in-alt me-1"></i>Login to Manage Items
-                    </a>
-                </div>
-            {% endif %}
         </div>
     </div>
 </div>
