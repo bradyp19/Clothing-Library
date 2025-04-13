@@ -181,7 +181,7 @@ def edit_item(request, item_id):
         form = ItemForm(request.POST, instance=item)
         addimageformset = AddImageFormset(request.POST, request.FILES, instance=item)
         if form.is_valid() and addimageformset.is_valid():
-            item = form.save()
+            item = form.save(commit=False)
             #TODO: small issue is these subclass specific fields are not populated with current data, so might accidentally change them to default minimum value
             if item_type == 'CLOTHING' and clothing_item:
                 clothing_item.size = request.POST.get('clothing_size')
@@ -190,7 +190,7 @@ def edit_item(request, item_id):
             elif item_type == 'SHOES' and shoes_item:
                 shoes_item.size = request.POST.get('shoes_size')
                 shoes_item.save()
-
+            item.save()
             addimageformset.save()
             return redirect('closet:item_detail', item_id=item.id)
     else:
@@ -330,7 +330,6 @@ def update_borrow_request(request, request_id, action):
     messages.success(request, f"Borrow request has been {borrow_request.status.lower()}.")
     return redirect("closet:review_borrow_requests")
 
-@login_required
 def item_detail(request, item_id):
     item = get_object_or_404(Item, pk=item_id)
     # Ensure we use the appropriate subclass if it exists

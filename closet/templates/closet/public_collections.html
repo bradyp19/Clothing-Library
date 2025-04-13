@@ -10,6 +10,11 @@
         <h2 class="mb-1">
             <i class="fas fa-folder me-2 text-primary"></i>{% trans "Public Collections" %}
         </h2>
+        <div>
+            <a href="{% url 'login:login' %}" class="btn btn-primary">
+                <i class="fas fa-sign-in-alt me-1"></i>Login to Create Collections
+            </a>
+        </div>
     </div>
 
     {% if public_collections %}
