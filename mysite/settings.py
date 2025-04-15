@@ -25,12 +25,38 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-70=uj4#qqj)m10191o0*@1)s&-_7x8c@)p4jk-0s6@&p+8y(im'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = [
     'localhost','127.0.0.1', 
     'project-a-07-dd2aa6e8d829.herokuapp.com', 
     'clothes-lending-app-34a159199717.herokuapp.com']
+
+SECURE_SSL_REDIRECT = True
+
+SECURE_HSTS_SECONDS = 3600  
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+
+# # security settings
+# CSRF_COOKIE_SECURE = True
+# SESSION_COOKIE_SECURE = True
+# SECURE_HSTS_SECONDS = 3600
+# SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+# SECURE_SSL_HOST = 'www.mydomain.com'
+# SECURE_SSL_REDIRECT = True
+# SECURE_CONTENT_TYPE_NOSNIFF = True
+# SECURE_BROWSER_XSS_FILTER = True
+# X_FRAME_OPTIONS = 'SAMEORIGIN'
+
+# # see also
+# # SECURE_HSTS_PRELOAD
+# # CSRF_USE_SESSIONS
+# # CSRF_FAILURE_VIEW
+
+# # only available in Django 2.1+
+# # SESSION_COOKIE_SAMESITE
+# # CSRF_COOKIE_SAMESITE
+
 
 # Application definition
 INSTALLED_APPS = [
