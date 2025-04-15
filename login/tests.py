@@ -15,7 +15,8 @@ class LoginTests(TestCase):
         )
     
     def test_login_url_status_code(self):
-        response = self.client.get(reverse('login:login'))
+        # Follow redirects so that a 301 is handled and final status is 200
+        response = self.client.get(reverse('login:login'), follow=True)
         self.assertEqual(response.status_code, 200)
     
     def test_login_form_authentication(self):
