@@ -21,8 +21,9 @@ class LoginTests(TestCase):
     
     def test_login_form_authentication(self):
         login_url = reverse('login:login')
+        # Use 'login' field as expected by django-allauth instead of 'username'
         response = self.client.post(login_url, {
-            'username': 'testuser',
+            'login': 'testuser',
             'password': 'testpass'
         }, follow=True)
         # Check that the user is authenticated
