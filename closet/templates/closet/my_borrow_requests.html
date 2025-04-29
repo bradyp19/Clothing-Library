@@ -4,12 +4,35 @@
 {% block title %}My Borrow Requests{% endblock %}
 
 {% block content %}
+<style>
+  .borrow-request {
+      padding: 20px;
+      margin-bottom: 20px;
+      background-color: #f8f9fa;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+  }
+  .extension-section {
+      background-color: #e8f0fe;
+      padding: 15px;
+      margin-top: 10px;
+      border-radius: 5px;
+      border: 1px dashed #007bff;
+  }
+  .extension-section label {
+      font-weight: bold;
+  }
+  .return-button {
+      margin-top: 15px;
+  }
+</style>
 <div class="container py-4">
     <h2>My Borrow Requests</h2>
     {% if borrow_requests %}
       <div class="list-group">
           {% for req in borrow_requests %}
             <div class="list-group-item">
+              <div class="list-group-item borrow-request">
                 <h5>{{ req.item.item_name }}</h5>
                 <p>
                     Requested on: {{ req.request_date|date:"SHORT_DATETIME_FORMAT" }}<br>
@@ -21,22 +44,29 @@
                 </p>
                 {% if req.status == "APPROVED" %}
                     {% if not req.extension_requested %}
-                        <form method="post" class="mb-3">
-                            {% csrf_token %}
-                            <input type="hidden" name="borrow_request_id" value="{{ req.id }}">
-                            <label for="new_end_date_{{ req.id }}">Request Extension Until:</label>
-                            <input type="date" name="new_end_date" id="new_end_date_{{ req.id }}" required>
-                            <button type="submit" class="btn btn-primary btn-sm mt-2">Submit Extension Request</button>
-                        </form>
+                    <div class="extension-section">
+                      <form method="post" class="mb-3">
+                        {% csrf_token %}
+                        <input type="hidden" name="borrow_request_id" value="{{ req.id }}">
+                        <label for="new_end_date_{{ req.id }}">Request Extension Until:</label>
+                        <input type="date" name="new_end_date" id="new_end_date_{{ req.id }}" required>
+                        <button type="submit" class="btn btn-primary btn-sm mt-2">Submit Extension Request</button>
+                    </form>
+                    </div>
                     {% else %}
-                        <p><strong>Extension Requested Until:</strong> {{ req.extended_date|date:"SHORT_DATE_FORMAT" }}<br>
+                    <div class="extension-section">
+                      <p><strong>Extension Requested Until:</strong> {{ req.extended_date|date:"SHORT_DATE_FORMAT" }}<br>
                         <strong>Extension Status:</strong> {{ req.extension_status }}</p>
                     {% endif %}
                     <form method="post" action="{% url 'closet:return_borrowed_item' req.id %}">
                       {% csrf_token %}
-                      <button type="submit" class="btn btn-warning btn-sm">Return Item</button>
+                      <button type="submit" class="btn btn-warning btn-sm return-button">Return Item</button>
                   </form>
+                    </div>
+                        
                 {% endif %}
+              </div>
+                
             </div>
           {% endfor %}
       </div>
