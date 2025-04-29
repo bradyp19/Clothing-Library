@@ -101,6 +101,14 @@ STORAGES = { #since we're on django 4.2 and later
 
 MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/'
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.sendgrid.net')
+EMAIL_PORT = int(os.getenv('EMAIL_PORT', 587))
+EMAIL_USE_TLS = True if os.getenv('EMAIL_USE_TLS', 'True') == 'True' else False
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', 'apikey')  
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'ClosetApp <noreply@closetapp.com>')
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
