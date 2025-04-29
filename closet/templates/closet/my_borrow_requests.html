@@ -75,5 +75,31 @@
     {% else %}
       <p>You have not submitted any borrow requests.</p>
     {% endif %}
+    <!-- History Section -->
+    <h2 class="mt-5">{% trans "Past Borrow Request History" %}</h2>
+    {% if borrow_history %}
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>{% trans "Item" %}</th>
+                    <th>{% trans "Requested On" %}</th>
+                    <th>{% trans "Status" %}</th>
+                    <th>{% trans "Last Updated" %}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for req in borrow_history %}
+                    <tr>
+                        <td>{{ req.item.item_name }}</td>
+                        <td>{{ req.request_date|date:"SHORT_DATETIME_FORMAT" }}</td>
+                        <td>{{ req.status }}</td>
+                        <td>{{ req.updated_at|date:"SHORT_DATETIME_FORMAT" }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>{% trans "No history available." %}</p>
+    {% endif %}
 </div>
 {% endblock %}

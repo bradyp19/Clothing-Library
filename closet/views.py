@@ -341,6 +341,7 @@ def my_borrow_requests(request):
     Displays a list of borrow requests the current user has submitted.
     """
     borrow_requests = BorrowRequest.objects.filter(requester=request.user).exclude(status="RETURNED").order_by("-request_date")
+    borrow_history = BorrowRequest.objects.exclude(status="PENDING").order_by("-updated_at")
     if request.method == "POST":
         request_id = request.POST.get('borrow_request_id')
         new_end_date = request.POST.get('new_end_date')
@@ -355,7 +356,7 @@ def my_borrow_requests(request):
             messages.error(request, "You cannot request an extension for this borrow request.")
 
         return redirect('closet:my_borrow_requests')
-    return render(request, 'closet/my_borrow_requests.html', {'borrow_requests': borrow_requests})
+    return render(request, 'closet/my_borrow_requests.html', {'borrow_requests': borrow_requests, 'borrow_history': borrow_history})
 
 @login_required
 def return_borrowed_item(request, request_id):
