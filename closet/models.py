@@ -127,6 +127,7 @@ class BorrowRequest(models.Model):
         ('PENDING', 'Pending'),
         ('APPROVED', 'Approved'),
         ('DENIED', 'Denied'),
+        ('RETURNED', 'Returned'),
     ]
     # Each borrow request is tied to an item and a requester (User)
     item = models.ForeignKey(Item, on_delete=models.CASCADE, related_name="borrow_requests")

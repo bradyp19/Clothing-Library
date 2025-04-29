@@ -340,7 +340,7 @@ def my_borrow_requests(request):
     """
     Displays a list of borrow requests the current user has submitted.
     """
-    borrow_requests = BorrowRequest.objects.filter(requester=request.user).order_by("-request_date")
+    borrow_requests = BorrowRequest.objects.filter(requester=request.user).exclude(status="RETURNED").order_by("-request_date")
     if request.method == "POST":
         request_id = request.POST.get('borrow_request_id')
         new_end_date = request.POST.get('new_end_date')
@@ -362,6 +362,7 @@ def return_borrowed_item(request, request_id):
     borrow_request = get_object_or_404(BorrowRequest, id=request_id, requester=request.user)
 
     if borrow_request.item.status == 'OUT':
+        borrow_request.status = 'RETURNED'
         borrow_request.item.status = 'IN'
         borrow_request.item.save()
 
