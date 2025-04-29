@@ -28,6 +28,13 @@
                                 {{ form | crispy }}
                             </div>
                         </div>
+                        {% if subform %}
+                        <div class="card shadow-sm border-0 mb-4">
+                            <div class="card-body">
+                                {{ subform|crispy }}
+                            </div>
+                        </div>
+                        {% endif %}
 
                         <!-- Images Section -->
                         <div class="card shadow-sm border-0 mb-4">
@@ -96,6 +103,14 @@
         }, false)
     })
 })()
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const itemTypeSelect = document.querySelector('select[name="item_type"]');
+    itemTypeSelect.addEventListener('change', function () {
+        this.form.submit();  // auto-submit to reload form with correct subform
+    });
+});
 </script>
 {% endblock %}
 

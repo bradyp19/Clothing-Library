@@ -26,6 +26,9 @@
                                     <i class="fas fa-info-circle me-2 text-primary"></i>Item Details
                                 </h5>
                                 {{ form | crispy }}
+                                {% if subform %}
+                                    {{ subform | crispy }}
+                                {% endif %}
                             </div>
                         </div>
 
