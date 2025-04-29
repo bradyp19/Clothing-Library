@@ -31,6 +31,7 @@
     {% if borrow_requests %}
       <div class="list-group">
           {% for req in borrow_requests %}
+          {% if req.status != "RETURNED" %}
             <div class="list-group-item">
               <div class="list-group-item borrow-request">
                 <h5>{{ req.item.item_name }}</h5>
@@ -69,6 +70,7 @@
               </div>
                 
             </div>
+            {% endif %}
           {% endfor %}
       </div>
     {% else %}
