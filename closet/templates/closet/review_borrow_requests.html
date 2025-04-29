@@ -13,6 +13,7 @@
                     <th>{% trans "Item" %}</th>
                     <th>{% trans "Requester" %}</th>
                     <th>{% trans "Requested On" %}</th>
+                    <th>{% trans "Borrow Extension Date" %}</th>
                     <th>{% trans "Actions" %}</th>
                 </tr>
             </thead>
@@ -27,6 +28,22 @@
                                 {% trans "Approve" %}
                             </a>
                             <a href="{% url 'closet:update_borrow_request' req.id 'deny' %}" class="btn btn-danger btn-sm">
+                                {% trans "Deny" %}
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                {% for req in pending_extensions%}
+                    <tr>
+                        <td>{{ req.item.item_name }}</td>
+                        <td>{{ req.requester.username }}</td>
+                        <td>{{ req.request_date|date:"SHORT_DATETIME_FORMAT" }}</td>
+                        <td>{{ req.extended_date|date:"SHORT_DATETIME_FORMAT" }}</td>
+                        <td>
+                            <a href="{% url 'closet:update_extension_request' req.id 'approve' %}" class="btn btn-success btn-sm">
+                                {% trans "Approve" %}
+                            </a>
+                            <a href="{% url 'closet:update_extension_request' req.id 'deny' %}" class="btn btn-danger btn-sm">
                                 {% trans "Deny" %}
                             </a>
                         </td>

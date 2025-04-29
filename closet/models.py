@@ -136,7 +136,7 @@ class BorrowRequest(models.Model):
     comment = models.TextField(blank=True, null=True)  # Optional comment from requester
     updated_at = models.DateTimeField(auto_now=True)
     start_date = models.DateTimeField(default=timezone.now)
-    end_date = models.DateTimeField(default=lambda: timezone.now() + timedelta(days=7)) # default lending period is 1 week
+    end_date = models.DateTimeField(default=timezone.now() + timedelta(days=7)) # default lending period is 1 week
     extension_requested = models.BooleanField(default=False)
     extended_date = models.DateTimeField(null=True, blank=True)
     extension_status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='PENDING')

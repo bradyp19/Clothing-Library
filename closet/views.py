@@ -6,6 +6,7 @@ from django.contrib import messages
 from django.urls import reverse
 from django.db.models import Q, Avg
 from django.views.generic.list import ListView
+from django.utils import timezone
 
 from .forms import ItemForm, AddImageFormset, CollectionForm, CollectionFormPrivacy, BorrowRequestForm, ItemReviewForm, \
     get_wanted_items_queryset, AccessRequestForm
@@ -340,6 +341,18 @@ def my_borrow_requests(request):
     Displays a list of borrow requests the current user has submitted.
     """
     borrow_requests = BorrowRequest.objects.filter(requester=request.user).order_by("-request_date")
+    if request.method == "POST":
+        request_id = request.POST.get('borrow_request_id')
+        new_end_date = request.POST.get('new_end_date')
+        borrow_request = get_object_or_404(BorrowRequest, id=request_id, requester=request.user)
+
+        borrow_request.extension_requested = True
+        borrow_request.extended_date = new_end_date
+        borrow_request.extension_status = 'PENDING'
+        borrow_request.save()
+
+        messages.success(request, "Extension request submitted.")
+        return redirect('closet:my_borrow_requests')
     return render(request, 'closet/my_borrow_requests.html', {'borrow_requests': borrow_requests})
 
 @login_required
@@ -349,10 +362,12 @@ def review_borrow_requests(request):
         return HttpResponseForbidden("You are not allowed to review borrow requests.")
 
     pending_requests = BorrowRequest.objects.filter(status="PENDING").order_by("request_date")
+    pending_extensions = BorrowRequest.objects.filter(extension_requested=True, extension_status="PENDING").order_by("request_date")
     history_requests = BorrowRequest.objects.exclude(status="PENDING").order_by("-updated_at")
 
     return render(request, 'closet/review_borrow_requests.html', {
         'pending_requests': pending_requests,
+        'pending_extensions': pending_extensions,
         'history_requests': history_requests,
     })
 
@@ -379,6 +394,20 @@ def update_borrow_request(request, request_id, action):
     borrow_request.save()
     messages.success(request, f"Borrow request has been {borrow_request.status.lower()}.")
     return redirect("closet:review_borrow_requests")
+
+@login_required
+def update_extension_request(request, request_id, action):
+    borrow_request = get_object_or_404(BorrowRequest, pk=request_id)
+    if not is_librarian(request):
+        return HttpResponseForbidden()
+
+    if action == 'approve':
+        borrow_request.end_date = borrow_request.extended_date
+        borrow_request.extension_status = 'APPROVED'
+    elif action == 'deny':
+        borrow_request.extension_status = 'DENIED'
+    borrow_request.save()
+    return redirect('closet:review_borrow_requests')
 
 def item_detail(request, item_id):
     item = get_object_or_404(Item, pk=item_id)
