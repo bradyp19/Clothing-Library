@@ -365,6 +365,7 @@ def return_borrowed_item(request, request_id):
         borrow_request.status = 'RETURNED'
         borrow_request.item.status = 'IN'
         borrow_request.item.save()
+        borrow_request.save()
 
         messages.success(request, "Item successfully returned. Thank you!")
     else:
