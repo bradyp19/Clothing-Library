@@ -68,9 +68,10 @@ class CollectionFormPrivacy(forms.ModelForm):
 AddImageFormset = forms.inlineformset_factory(Item, Images, extra=3, form=ImageForm, can_delete=False)
 
 class BorrowRequestForm(forms.ModelForm):
+    borrow_duration = forms.IntegerField(min_value=1, max_value=60, initial=7, help_text="How long do you want to borrow this item?")
     class Meta:
         model = BorrowRequest
-        fields = ['comment']  # Let users optionally add a comment with their request
+        fields = ['comment', 'borrow_duration']  # Let users optionally add a comment with their request
         widgets = {
             'comment': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Optional: Add a note...'}),
         }

@@ -326,6 +326,8 @@ def request_borrow_item(request, item_id):
             borrow_req.item = item
             borrow_req.requester = request.user
             borrow_req.save()
+            days = form.cleaned_data['borrow_duration']
+            borrow_req.end_date = timezone.now().date() + timezone.timedelta(days=days)
             messages.success(request, "Your borrow request has been submitted.")
             return redirect('closet:item_detail', item_id=item.id)
     else:
