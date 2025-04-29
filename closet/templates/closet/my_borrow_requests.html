@@ -4,25 +4,102 @@
 {% block title %}My Borrow Requests{% endblock %}
 
 {% block content %}
+<style>
+  .borrow-request {
+      padding: 20px;
+      margin-bottom: 20px;
+      background-color: #f8f9fa;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+  }
+  .extension-section {
+      background-color: #e8f0fe;
+      padding: 15px;
+      margin-top: 10px;
+      border-radius: 5px;
+      border: 1px dashed #007bff;
+  }
+  .extension-section label {
+      font-weight: bold;
+  }
+  .return-button {
+      margin-top: 15px;
+  }
+</style>
 <div class="container py-4">
     <h2>My Borrow Requests</h2>
     {% if borrow_requests %}
       <div class="list-group">
           {% for req in borrow_requests %}
             <div class="list-group-item">
+              <div class="list-group-item borrow-request">
                 <h5>{{ req.item.item_name }}</h5>
                 <p>
                     Requested on: {{ req.request_date|date:"SHORT_DATETIME_FORMAT" }}<br>
+                    Return on: {{ req.end_date|date:"SHORT_DATETIME_FORMAT" }}<br>
                     Status: <strong>{{ req.status }}</strong><br>
                     {% if req.comment %}
                         Comment: {{ req.comment }}
                     {% endif %}
                 </p>
+                {% if req.status == "APPROVED" %}
+                    {% if not req.extension_requested %}
+                    <div class="extension-section">
+                      <form method="post" class="mb-3">
+                        {% csrf_token %}
+                        <input type="hidden" name="borrow_request_id" value="{{ req.id }}">
+                        <label for="new_end_date_{{ req.id }}">Request Extension Until:</label>
+                        <input type="date" name="new_end_date" id="new_end_date_{{ req.id }}" required>
+                        <button type="submit" class="btn btn-primary btn-sm py-0">Submit Extension Request</button>
+                    </form>
+                    {% else %}
+                    
+                      <p><strong>Extension Requested Until:</strong> {{ req.extended_date|date:"SHORT_DATE_FORMAT" }}<br>
+                        <strong>Extension Status:</strong> {{ req.extension_status }}</p>
+                    {% endif %}
+                    <form method="post" action="{% url 'closet:return_borrowed_item' req.id %}">
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-warning btn-sm return-button">Return Item</button>
+                  </form>
+                    </div>
+                    
+                    
+                        
+                {% endif %}
+              </div>
+                
             </div>
+       
           {% endfor %}
       </div>
     {% else %}
       <p>You have not submitted any borrow requests.</p>
+    {% endif %}
+    <!-- History Section -->
+    <h2 class="mt-5">{% trans "Past Borrow Request History" %}</h2>
+    {% if borrow_history %}
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>{% trans "Item" %}</th>
+                    <th>{% trans "Requested On" %}</th>
+                    <th>{% trans "Status" %}</th>
+                    <th>{% trans "Last Updated" %}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for req in borrow_history %}
+                    <tr>
+                        <td>{{ req.item.item_name }}</td>
+                        <td>{{ req.request_date|date:"SHORT_DATETIME_FORMAT" }}</td>
+                        <td>{{ req.status }}</td>
+                        <td>{{ req.updated_at|date:"SHORT_DATETIME_FORMAT" }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>{% trans "No history available." %}</p>
     {% endif %}
 </div>
 {% endblock %}
