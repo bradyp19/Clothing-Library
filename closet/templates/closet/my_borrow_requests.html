@@ -31,7 +31,6 @@
     {% if borrow_requests %}
       <div class="list-group">
           {% for req in borrow_requests %}
-          {% if req.status != "RETURNED" %}
             <div class="list-group-item">
               <div class="list-group-item borrow-request">
                 <h5>{{ req.item.item_name }}</h5>
@@ -51,7 +50,7 @@
                         <input type="hidden" name="borrow_request_id" value="{{ req.id }}">
                         <label for="new_end_date_{{ req.id }}">Request Extension Until:</label>
                         <input type="date" name="new_end_date" id="new_end_date_{{ req.id }}" required>
-                        <button type="submit" class="btn btn-primary btn-sm">Submit Extension Request</button>
+                        <button type="submit" class="btn btn-primary btn-sm py-0">Submit Extension Request</button>
                     </form>
                     {% else %}
                     
@@ -70,7 +69,7 @@
               </div>
                 
             </div>
-            {% endif %}
+       
           {% endfor %}
       </div>
     {% else %}
