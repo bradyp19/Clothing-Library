@@ -23,6 +23,7 @@
                         <td>{{ req.item.item_name }}</td>
                         <td>{{ req.requester.username }}</td>
                         <td>{{ req.request_date|date:"SHORT_DATETIME_FORMAT" }}</td>
+                        <td>{{ req.extended_date|date:"SHORT_DATETIME_FORMAT" }}</td>
                         <td>
                             <a href="{% url 'closet:update_borrow_request' req.id 'approve' %}" class="btn btn-success btn-sm">
                                 {% trans "Approve" %}

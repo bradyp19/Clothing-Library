@@ -358,6 +358,20 @@ def my_borrow_requests(request):
     return render(request, 'closet/my_borrow_requests.html', {'borrow_requests': borrow_requests})
 
 @login_required
+def return_borrowed_item(request, request_id):
+    borrow_request = get_object_or_404(BorrowRequest, id=request_id, requester=request.user)
+
+    if borrow_request.item.status == 'OUT':
+        borrow_request.item.status = 'IN'
+        borrow_request.item.save()
+
+        messages.success(request, "Item successfully returned. Thank you!")
+    else:
+        messages.error(request, "You cannot return this item.")
+
+    return redirect('closet:my_borrow_requests')
+
+@login_required
 def review_borrow_requests(request):
     # Allow only librarians to access this view.
     if not (hasattr(request.user, 'profile') and request.user.profile.role.lower() == 'librarian'):

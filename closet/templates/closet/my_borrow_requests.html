@@ -32,6 +32,10 @@
                         <p><strong>Extension Requested Until:</strong> {{ req.extended_date|date:"SHORT_DATE_FORMAT" }}<br>
                         <strong>Extension Status:</strong> {{ req.extension_status }}</p>
                     {% endif %}
+                    <form method="post" action="{% url 'closet:return_borrowed_item' req.id %}">
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-warning btn-sm">Return Item</button>
+                  </form>
                 {% endif %}
             </div>
           {% endfor %}

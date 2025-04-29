@@ -24,6 +24,7 @@ urlpatterns = [
     path("access_requests/<int:request_id>/<str:action>/", views.update_access_request, name = "update_access_request"),
 
     path("item/<int:item_id>/borrow/", views.request_borrow_item, name="request_borrow_item"),
+    path('borrow_request/<int:request_id>/return/', views.return_borrowed_item, name='return_borrowed_item'),
     path("my_borrow_requests/", views.my_borrow_requests, name="my_borrow_requests"),
     path("review_borrow_requests/", views.review_borrow_requests, name="review_borrow_requests"),
     path("borrow_request/<int:request_id>/<str:action>/", views.update_borrow_request, name="update_borrow_request"),
