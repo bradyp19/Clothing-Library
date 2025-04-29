@@ -26,7 +26,7 @@
                         {% endfor %}
                     {% endif %}
                     
-                    <form method="POST" class="needs-validation" novalidate>
+                    <!-- <form method="POST" class="needs-validation" novalidate>
                         {% csrf_token %}
                         {{ form|crispy }}
                         
@@ -35,14 +35,14 @@
                                 <i class="fas fa-sign-in-alt me-2"></i>{% trans "Sign In" %}
                             </button>
                         </div>
-                    </form>
+                    </form> -->
                     
-                    <div class="position-relative mb-4">
+                    <!-- <div class="position-relative mb-4">
                         <hr>
                         <span class="position-absolute top-50 start-50 translate-middle bg-white px-3 text-muted small">
                             {% trans "or continue with" %}
                         </span>
-                    </div>
+                    </div> -->
                     
                     <div class="d-grid mb-4">
                         <a href="{% provider_login_url 'google' %}" class="btn btn-outline-danger">
@@ -57,14 +57,14 @@
                         </a>
                     </div>
 
-                    <div class="text-center">
+                    <!-- <div class="text-center">
                         <p class="mb-2">{% trans "Don't have an account?" %} 
                             <a href="{% url 'account_signup' %}" class="text-primary text-decoration-none">{% trans "Sign Up" %}</a>
                         </p>
                         <a href="{% url 'account_reset_password' %}" class="text-muted small text-decoration-none">
                             {% trans "Forgot your password?" %}
                         </a>
-                    </div>
+                    </div> -->
                 </div>
             </div>
         </div>
