@@ -52,9 +52,8 @@
                         <input type="date" name="new_end_date" id="new_end_date_{{ req.id }}" required>
                         <button type="submit" class="btn btn-primary btn-sm mt-2">Submit Extension Request</button>
                     </form>
-                    </div>
                     {% else %}
-                    <div class="extension-section">
+                    
                       <p><strong>Extension Requested Until:</strong> {{ req.extended_date|date:"SHORT_DATE_FORMAT" }}<br>
                         <strong>Extension Status:</strong> {{ req.extension_status }}</p>
                     {% endif %}
@@ -63,6 +62,8 @@
                       <button type="submit" class="btn btn-warning btn-sm return-button">Return Item</button>
                   </form>
                     </div>
+                    
+                    
                         
                 {% endif %}
               </div>
