@@ -345,13 +345,15 @@ def my_borrow_requests(request):
         request_id = request.POST.get('borrow_request_id')
         new_end_date = request.POST.get('new_end_date')
         borrow_request = get_object_or_404(BorrowRequest, id=request_id, requester=request.user)
+        if borrow_request.status == 'APPROVED' and not borrow_request.extension_requested:
+            borrow_request.extension_requested = True
+            borrow_request.extended_date = new_end_date
+            borrow_request.extension_status = 'PENDING'
+            borrow_request.save()
+            messages.success(request, "Extension request submitted.")
+        else:
+            messages.error(request, "You cannot request an extension for this borrow request.")
 
-        borrow_request.extension_requested = True
-        borrow_request.extended_date = new_end_date
-        borrow_request.extension_status = 'PENDING'
-        borrow_request.save()
-
-        messages.success(request, "Extension request submitted.")
         return redirect('closet:my_borrow_requests')
     return render(request, 'closet/my_borrow_requests.html', {'borrow_requests': borrow_requests})
 

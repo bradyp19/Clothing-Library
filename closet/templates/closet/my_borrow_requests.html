@@ -13,11 +13,26 @@
                 <h5>{{ req.item.item_name }}</h5>
                 <p>
                     Requested on: {{ req.request_date|date:"SHORT_DATETIME_FORMAT" }}<br>
+                    Return on: {{ req.end_date|date:"SHORT_DATETIME_FORMAT" }}<br>
                     Status: <strong>{{ req.status }}</strong><br>
                     {% if req.comment %}
                         Comment: {{ req.comment }}
                     {% endif %}
                 </p>
+                {% if req.status == "APPROVED" %}
+                    {% if not req.extension_requested %}
+                        <form method="post" class="mb-3">
+                            {% csrf_token %}
+                            <input type="hidden" name="borrow_request_id" value="{{ req.id }}">
+                            <label for="new_end_date_{{ req.id }}">Request Extension Until:</label>
+                            <input type="date" name="new_end_date" id="new_end_date_{{ req.id }}" required>
+                            <button type="submit" class="btn btn-primary btn-sm mt-2">Submit Extension Request</button>
+                        </form>
+                    {% else %}
+                        <p><strong>Extension Requested Until:</strong> {{ req.extended_date|date:"SHORT_DATE_FORMAT" }}<br>
+                        <strong>Extension Status:</strong> {{ req.extension_status }}</p>
+                    {% endif %}
+                {% endif %}
             </div>
           {% endfor %}
       </div>
