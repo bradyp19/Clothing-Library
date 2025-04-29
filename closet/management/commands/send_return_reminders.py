@@ -11,7 +11,7 @@ class Command(BaseCommand):
         tomorrow = today + timezone.timedelta(days=1)
 
         due_soon = BorrowRequest.objects.filter(
-            end_date=tomorrow,
+            borrow_end_date=tomorrow,
             status='APPROVED'
         )
 
