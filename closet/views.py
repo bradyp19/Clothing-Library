@@ -386,9 +386,12 @@ def update_borrow_request(request, request_id, action):
     if action == "approve":
         borrow_request.status = "APPROVED"
         borrow_request.item.status = "OUT"
+        borrow_request.end_date = borrow_request.extended_date
+        borrow_request.extension_status = 'APPROVED'
         borrow_request.item.save()
     elif action == "deny":
         borrow_request.status = "DENIED"
+        borrow_request.extension_status = 'DENIED'
     else:
         messages.error(request, "Invalid action.")
         return redirect("closet:review_borrow_requests")
@@ -397,19 +400,19 @@ def update_borrow_request(request, request_id, action):
     messages.success(request, f"Borrow request has been {borrow_request.status.lower()}.")
     return redirect("closet:review_borrow_requests")
 
-@login_required
-def update_extension_request(request, request_id, action):
-    borrow_request = get_object_or_404(BorrowRequest, pk=request_id)
-    if not is_librarian(request):
-        return HttpResponseForbidden()
+# @login_required
+# def update_extension_request(request, request_id, action):
+#     borrow_request = get_object_or_404(BorrowRequest, pk=request_id)
+#     if not is_librarian(request):
+#         return HttpResponseForbidden()
 
-    if action == 'approve':
-        borrow_request.end_date = borrow_request.extended_date
-        borrow_request.extension_status = 'APPROVED'
-    elif action == 'deny':
-        borrow_request.extension_status = 'DENIED'
-    borrow_request.save()
-    return redirect('closet:review_borrow_requests')
+#     if action == 'approve':
+#         borrow_request.end_date = borrow_request.extended_date
+#         borrow_request.extension_status = 'APPROVED'
+#     elif action == 'deny':
+#         borrow_request.extension_status = 'DENIED'
+#     borrow_request.save()
+#     return redirect('closet:review_borrow_requests')
 
 def item_detail(request, item_id):
     item = get_object_or_404(Item, pk=item_id)
