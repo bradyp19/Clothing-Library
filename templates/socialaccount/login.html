@@ -1,0 +1,36 @@
+{% extends "login/base.html" %}
+{% load i18n %}
+{% load allauth %}
+
+{% block title %}{% trans "Sign In Via Google" %} | Closet App{% endblock %}
+
+{% block content %}
+<!--div class="flex-grow-1 bg-body-secondary d-flex flex-column justify-content-center"-->
+        <div class="flex-grow-0 flex-shrink-0 container">
+            <div class="row justify-content-md-center">
+                <div class="col col-lg-4">
+
+                    <div class="bg-white shadow rounded-4">
+                        <div id="content" class="p-5">
+
+                        <h1 class="fw-bold fs-2">
+                                    Sign In Via Google
+                        </h1>
+
+                        <p>
+                            You are about to sign in using a third-party account from Google.
+                        </p>
+
+                        <form class="mb-0" method="POST">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-primary w-100">
+                                        {% trans "Continue" %}
+                                    </button>
+                        </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <!--/div-->
+{% endblock %}
