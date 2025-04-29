@@ -186,29 +186,27 @@ def add_collection(request):
     if request.method == 'POST':
         if is_librarian(request):
             form = CollectionFormPrivacy(request.POST)
+            privacy = request.POST.get('privacy_setting')
+            if privacy:
+                form.fields['items'].queryset = get_wanted_items_queryset(privacy.lower())
+                if 'final_submit' not in request.POST:
+                    form.data = form.data.copy()
+                    form.data.setlist('items', [])
         else:
             form = CollectionForm(request.POST)
             form.fields['items'].queryset = get_wanted_items_queryset('public')
-        if form.is_valid():
+        if 'final_submit' in request.POST and form.is_valid():
             collection = form.save(commit=False)
             collection.owner = request.user
-            # # Force collections created by non-librarians (Patrons) to be public
-            # if not (hasattr(request.user, 'profile') and request.user.profile.role == 'librarian'):
-            #     collection.privacy_setting = 'PUBLIC'
             collection.save()
             form.save_m2m()
-            # # Optionally, populate access_list here (e.g., add owner and all librarians)
-            # collection.access_list.add(request.user)
-            # from django.contrib.auth import get_user_model
-            # User = get_user_model()
-            # librarians = User.objects.filter(profile__role='librarian')
-            # for librarian in librarians:
-            #     collection.access_list.add(librarian)
             return redirect('closet:collections_list')
             # additional todos - if select private in librarian collection form, items that are in_collection should not be an option to select. for public, items that are in_private should not be options
     else:
         if is_librarian(request):
             form = CollectionFormPrivacy()
+            #first is public
+            form.fields['items'].queryset = get_wanted_items_queryset('public')
         else:
             form = CollectionForm()
             form.fields['items'].queryset = get_wanted_items_queryset('public')
