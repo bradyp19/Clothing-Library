@@ -7,7 +7,7 @@ from django.urls import reverse
 from django.db.models import Q, Avg
 from django.views.generic.list import ListView
 from django.utils import timezone
-
+from django import forms
 from .forms import ItemForm, AddImageFormset, CollectionForm, CollectionFormPrivacy, BorrowRequestForm, ItemReviewForm, \
     get_wanted_items_queryset, AccessRequestForm, ClothingForm, ShoesForm
 from .filters import ItemFilter, CollectionFilter
@@ -223,8 +223,13 @@ def edit_item(request, item_id):
     shoes_item = getattr(item, 'shoes', None)
 
     SubclassForm = ClothingForm if item_type == 'CLOTHING' else ShoesForm
+
     if request.method == 'POST':
-        form = ItemForm(request.POST, instance=item)
+        post_data = request.POST.copy()
+        post_data['item_type'] = item_type
+
+        form = ItemForm(post_data, instance=item)
+        form.fields['item_type'].widget = forms.HiddenInput()
         addimageformset = AddImageFormset(request.POST, request.FILES, instance=item)
 
         subform = None
@@ -234,13 +239,17 @@ def edit_item(request, item_id):
             subform = SubclassForm(request.POST, instance=shoes_item)
 
         if form.is_valid() and addimageformset.is_valid() and (subform is None or subform.is_valid()):
-           form.save()
+           item = form.save(commit=False)
            if subform:
-               subform.save()
+               subitem = subform.save(commit=False)
+               subitem.item_ptr = item
+               subitem.save()
+           item.save()
            addimageformset.save()
            return redirect('closet:item_detail', item_id=item.id)
     else:
         form = ItemForm(instance=item)
+        form.fields['item_type'].widget = forms.HiddenInput()
         addimageformset = AddImageFormset(instance=item)
         subform = None
         if item_type == 'CLOTHING':
@@ -344,7 +353,7 @@ def my_borrow_requests(request):
     Displays a list of borrow requests the current user has submitted.
     """
     borrow_requests = BorrowRequest.objects.filter(requester=request.user).exclude(status="RETURNED").order_by("-request_date")
-    borrow_history = BorrowRequest.objects.exclude(status="PENDING").order_by("-updated_at")
+    borrow_history = BorrowRequest.objects.filter(requester=request.user).exclude(status="PENDING").order_by("-updated_at")
     if request.method == "POST":
         request_id = request.POST.get('borrow_request_id')
         new_end_date = request.POST.get('new_end_date')
