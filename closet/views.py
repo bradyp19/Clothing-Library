@@ -328,7 +328,9 @@ def request_borrow_item(request, item_id):
             borrow_req.requester = request.user
             borrow_req.save()
             days = form.cleaned_data['borrow_duration']
+            borrow_req.borrow_duration = days
             borrow_req.end_date = timezone.now().date() + timezone.timedelta(days=days)
+            borrow_req.save()
             messages.success(request, "Your borrow request has been submitted.")
             return redirect('closet:item_detail', item_id=item.id)
     else:
@@ -407,7 +409,7 @@ def update_borrow_request(request, request_id, action):
         borrow_request.extension_status = 'APPROVED'
         borrow_request.item.save()
         if not borrow_request.end_date:
-            borrow_request.end_date = timezone.now().date() + timezone.timedelta(days=7)
+            borrow_request.end_date = timezone.now().date() + timezone.timedelta(days=borrow_request.borrow_duration)
     elif action == "deny":
         borrow_request.status = "DENIED"
         borrow_request.extension_status = 'DENIED'

@@ -140,6 +140,7 @@ class BorrowRequest(models.Model):
     end_date = models.DateTimeField(default=timezone.now() + timedelta(days=7)) # default lending period is 1 week
     extension_requested = models.BooleanField(default=False)
     extended_date = models.DateTimeField(null=True, blank=True)
+    borrow_duration = models.PositiveIntegerField(default=7)
     extension_status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='PENDING')
 
     def __str__(self):
