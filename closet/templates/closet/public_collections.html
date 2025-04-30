@@ -98,6 +98,11 @@
             <h4 class="text-muted mb-2">{% trans "No public collections found." %}</h4>
         </div>
     {% endif %}
+    <div class="mt-5 text-center">
+        <a href="{% url 'closet:closet_index' %}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i>Back to Closet
+        </a>
+    </div>
 </div>
 {% endblock %}
 
