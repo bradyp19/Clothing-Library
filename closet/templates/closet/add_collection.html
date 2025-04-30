@@ -32,7 +32,7 @@
 
                         <!-- Form Actions -->
                         <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary btn-lg">
+                            <button type="submit" name="final_submit" class="btn btn-primary btn-lg">
                                 <i class="fas fa-plus me-1"></i>Create Collection
                             </button>
                             <a href="{% url 'closet:collections_list' %}" class="btn btn-outline-secondary">
@@ -82,6 +82,16 @@
         }, false)
     })
 })()
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const privacySelect = document.querySelector('[name="privacy_setting"]');
+        if (privacySelect) {
+            privacySelect.addEventListener('change', function () {
+                this.form.submit();
+            });
+        }
+    });
 </script>
 {% endblock %}
 

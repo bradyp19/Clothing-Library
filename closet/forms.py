@@ -12,14 +12,24 @@ class ItemForm(forms.ModelForm):
         model = Item
         fields = ["item_name", "brand", "condition", "fit", "occasion", "gender", "description"]
 
-    clothing_size = forms.ChoiceField(choices=Clothing.SIZE_CHOICES, required=False, widget=forms.Select(attrs={"id": "clothing-size"}))
-    clothing_type = forms.ChoiceField(choices=Clothing.CLOTHING_TYPE_CHOICES, required=False, widget=forms.Select(attrs={"id": "clothing-type"}))
-    shoes_size = forms.ChoiceField(choices=Shoes.SIZE_CHOICES, required=False, widget=forms.Select(attrs={"id": "shoes-size"}))
+    # clothing_size = forms.ChoiceField(choices=Clothing.SIZE_CHOICES, required=False, widget=forms.Select(attrs={"id": "clothing-size"}))
+    # clothing_type = forms.ChoiceField(choices=Clothing.CLOTHING_TYPE_CHOICES, required=False, widget=forms.Select(attrs={"id": "clothing-type"}))
+    # shoes_size = forms.ChoiceField(choices=Shoes.SIZE_CHOICES, required=False, widget=forms.Select(attrs={"id": "shoes-size"}))
 
 class ImageForm(forms.ModelForm):
     class Meta:
         model = Images
         fields = ["image"]
+
+class ClothingForm(forms.ModelForm):
+    class Meta:
+        model = Clothing
+        fields = ['size', 'clothing_type']
+
+class ShoesForm(forms.ModelForm):
+    class Meta:
+        model = Shoes
+        fields = ['size']
 
 def get_wanted_items_queryset(option):
     if option == 'all':
@@ -65,7 +75,7 @@ class CollectionFormPrivacy(forms.ModelForm):
         widget=forms.CheckboxSelectMultiple()
     )
 
-AddImageFormset = forms.inlineformset_factory(Item, Images, extra=3, form=ImageForm, can_delete=False)
+AddImageFormset = forms.inlineformset_factory(Item, Images, extra=5, form=ImageForm, can_delete=False)
 
 class BorrowRequestForm(forms.ModelForm):
     borrow_duration = forms.IntegerField(min_value=1, max_value=60, initial=1, help_text="How long do you want to borrow this item?")

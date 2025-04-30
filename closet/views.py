@@ -9,7 +9,7 @@ from django.views.generic.list import ListView
 from django.utils import timezone
 
 from .forms import ItemForm, AddImageFormset, CollectionForm, CollectionFormPrivacy, BorrowRequestForm, ItemReviewForm, \
-    get_wanted_items_queryset, AccessRequestForm
+    get_wanted_items_queryset, AccessRequestForm, ClothingForm, ShoesForm
 from .filters import ItemFilter, CollectionFilter
 from closet.models import Item, Clothing, Shoes, Images, Collection, BorrowRequest, AccessRequest
 from login.models import Librarian, Patron, Profile
@@ -28,43 +28,43 @@ class AddView(generic.CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        if self.request.POST:
-            context['addimageformset'] = AddImageFormset(self.request.POST, self.request.FILES)
+        post_data = self.request.POST if self.request.POST else None
+        context['addimageformset'] = AddImageFormset(post_data, self.request.FILES) if post_data else AddImageFormset()
+
+        item_type = self.request.POST.get('item_type') if post_data else "CLOTHING"
+        if item_type == "CLOTHING":
+            context['subform'] = ClothingForm(post_data)
+        elif item_type == "SHOES":
+            context['subform'] = ShoesForm(post_data)
         else:
-            context['addimageformset'] = AddImageFormset()
+            context['subform'] = None
         return context
 
     def form_valid(self, form):
         context = self.get_context_data()
         addimageformset = context['addimageformset']
-        
-        if form.is_valid() and addimageformset.is_valid():
-            item = form.save(commit=False)
-            item.save()
+        subform = context['subform']
+        item_type = form.cleaned_data["item_type"]
 
-            item_type = form.cleaned_data["item_type"]
-            if item_type == "CLOTHING":
-                clothing = Clothing(
-                    item_ptr=item, #multi-table inheritance 1 to 1 relationship
-                    size=form.cleaned_data["clothing_size"],
-                    clothing_type=form.cleaned_data["clothing_type"]
-                )
-                clothing.save_base(raw=True) #dont save parent Item instance again
-            elif item_type == "SHOES":
-                shoes = Shoes(
-                    item_ptr=item,
-                    size=form.cleaned_data["shoes_size"]
-                )
-                shoes.save_base(raw=True)
-     
-            images = addimageformset.save(commit=False)
-            for index, image in enumerate(images):
-                image.item = item
-                image.order = index
-                image.save()
-            return redirect(reverse("closet:closet_index")) # change this to redirect to desired page
-        else:
-            return self.render_to_response(self.get_context_data(form=form, addimageformset=addimageformset))
+        if not addimageformset.is_valid() or (subform and not subform.is_valid()):
+            return self.form_invalid(form)
+
+        item=form.save()
+
+        if item_type == "CLOTHING":
+            clothing = subform.save(commit=False)
+            clothing.item_ptr = item
+            clothing.save_base(raw=True)
+        elif item_type == "SHOES":
+            shoes = subform.save(commit=False)
+            shoes.item_ptr = item
+            shoes.save_base(raw=True)
+        images = addimageformset.save(commit=False)
+        for index, image in enumerate(images):
+            image.item = item
+            image.order = index
+            image.save()
+        return redirect(reverse("closet:closet_index")) # change this to redirect to desired page
 def item_list(request):
     search = request.GET.get("q", None)
 
@@ -186,29 +186,27 @@ def add_collection(request):
     if request.method == 'POST':
         if is_librarian(request):
             form = CollectionFormPrivacy(request.POST)
+            privacy = request.POST.get('privacy_setting')
+            if privacy:
+                form.fields['items'].queryset = get_wanted_items_queryset(privacy.lower())
+                if 'final_submit' not in request.POST:
+                    form.data = form.data.copy()
+                    form.data.setlist('items', [])
         else:
             form = CollectionForm(request.POST)
             form.fields['items'].queryset = get_wanted_items_queryset('public')
-        if form.is_valid():
+        if 'final_submit' in request.POST and form.is_valid():
             collection = form.save(commit=False)
             collection.owner = request.user
-            # # Force collections created by non-librarians (Patrons) to be public
-            # if not (hasattr(request.user, 'profile') and request.user.profile.role == 'librarian'):
-            #     collection.privacy_setting = 'PUBLIC'
             collection.save()
             form.save_m2m()
-            # # Optionally, populate access_list here (e.g., add owner and all librarians)
-            # collection.access_list.add(request.user)
-            # from django.contrib.auth import get_user_model
-            # User = get_user_model()
-            # librarians = User.objects.filter(profile__role='librarian')
-            # for librarian in librarians:
-            #     collection.access_list.add(librarian)
             return redirect('closet:collections_list')
             # additional todos - if select private in librarian collection form, items that are in_collection should not be an option to select. for public, items that are in_private should not be options
     else:
         if is_librarian(request):
             form = CollectionFormPrivacy()
+            #first is public
+            form.fields['items'].queryset = get_wanted_items_queryset('public')
         else:
             form = CollectionForm()
             form.fields['items'].queryset = get_wanted_items_queryset('public')
@@ -224,32 +222,37 @@ def edit_item(request, item_id):
     clothing_item = getattr(item, 'clothing', None)
     shoes_item = getattr(item, 'shoes', None)
 
+    SubclassForm = ClothingForm if item_type == 'CLOTHING' else ShoesForm
     if request.method == 'POST':
         form = ItemForm(request.POST, instance=item)
         addimageformset = AddImageFormset(request.POST, request.FILES, instance=item)
-        if form.is_valid() and addimageformset.is_valid():
-            item = form.save(commit=False)
-            #TODO: small issue is these subclass specific fields are not populated with current data, so might accidentally change them to default minimum value
-            if item_type == 'CLOTHING' and clothing_item:
-                clothing_item.size = request.POST.get('clothing_size')
-                clothing_item.clothing_type = request.POST.get('clothing_type')
-                clothing_item.save()
-            elif item_type == 'SHOES' and shoes_item:
-                shoes_item.size = request.POST.get('shoes_size')
-                shoes_item.save()
-            item.save()
-            addimageformset.save()
-            return redirect('closet:item_detail', item_id=item.id)
+
+        subform = None
+        if item_type == 'CLOTHING':
+            subform = SubclassForm(request.POST, instance=clothing_item)
+        elif item_type == 'SHOES':
+            subform = SubclassForm(request.POST, instance=shoes_item)
+
+        if form.is_valid() and addimageformset.is_valid() and (subform is None or subform.is_valid()):
+           form.save()
+           if subform:
+               subform.save()
+           addimageformset.save()
+           return redirect('closet:item_detail', item_id=item.id)
     else:
         form = ItemForm(instance=item)
         addimageformset = AddImageFormset(instance=item)
+        subform = None
+        if item_type == 'CLOTHING':
+            subform = SubclassForm(instance=clothing_item)
+        elif item_type == 'SHOES':
+            subform = SubclassForm(instance=shoes_item)
     context = {
         'form': form,
         'addimageformset': addimageformset,
+        'subform': subform,
         'item': item,
-        'item_type': item_type,
-        'clothing_item': clothing_item,
-        'shoes_item': shoes_item,
+        'item_type': item_type
     }
     return render(request, 'closet/edit_item.html', context)
 
