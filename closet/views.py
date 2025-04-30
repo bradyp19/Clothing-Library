@@ -406,16 +406,24 @@ def update_borrow_request(request, request_id, action):
         return HttpResponseForbidden("You are not allowed to update borrow requests.")
     
     if action == "approve":
-        borrow_request.status = "APPROVED"
-        borrow_request.item.status = "OUT"
-        borrow_request.end_date = borrow_request.extended_date
-        borrow_request.extension_status = 'APPROVED'
-        borrow_request.item.save()
-        if not borrow_request.end_date:
-            borrow_request.end_date = timezone.now().date() + timezone.timedelta(days=borrow_request.borrow_duration)
+        if borrow_request.extension_requested and borrow_request.extension_status == "PENDING":
+            borrow_request.end_date = borrow_request.extended_date
+            borrow_request.extension_status = 'APPROVED'
+        else:
+            borrow_request.status = "APPROVED"
+            borrow_request.item.status = "OUT"
+            borrow_request.item.save()
+            borrow_request.extension_status = 'APPROVED'
+            borrow_request.end_date = borrow_request.extended_date or (
+                timezone.now().date() + timezone.timedelta(days=borrow_request.borrow_duration)
+            )
+        
     elif action == "deny":
-        borrow_request.status = "DENIED"
-        borrow_request.extension_status = 'DENIED'
+        if borrow_request.extension_requested and borrow_request.extension_status == "PENDING":
+            borrow_request.extension_status = 'DENIED'
+        else:
+            borrow_request.status = "DENIED"
+            borrow_request.extension_status = 'DENIED'
     else:
         messages.error(request, "Invalid action.")
         return redirect("closet:review_borrow_requests")
