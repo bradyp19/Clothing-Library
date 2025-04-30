@@ -386,7 +386,7 @@ def review_borrow_requests(request):
         return HttpResponseForbidden("You are not allowed to review borrow requests.")
 
     pending_requests = BorrowRequest.objects.filter(status="PENDING").order_by("request_date")
-    pending_extensions = BorrowRequest.objects.filter(extension_requested=True, extension_status="PENDING").order_by("request_date")
+    pending_extensions = BorrowRequest.objects.filter(extension_requested=True, extension_status="PENDING").order_by("-request_date")
     history_requests = BorrowRequest.objects.exclude(status="PENDING").order_by("-updated_at")
 
     return render(request, 'closet/review_borrow_requests.html', {
